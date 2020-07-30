@@ -1,0 +1,291 @@
+import os
+import discord
+import sqlalchemy
+from discord.ext import commands
+
+from utils.config import Config
+from utils.logger import Logger
+from utils.database import Database
+from utils.messages import Messages
+
+
+class Admin(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+        self.msg = Messages()
+        self.db = Database()
+        self.log = Logger()
+        self.config = Config()
+        self.session = self.db.session
+
+        self.admin = lambda guild: self.db.get(self.db.Admin.guild_id == guild.id, self.db.Admin)
+
+    async def cog_check(self, ctx):
+        perms = {'manage_guild': True}
+        raised_perms = []
+        for perm, value in perms.items():
+            if getattr(ctx.channel.permissions_for(ctx.author), perm, None) != value:
+                raised_perms.append(perm)
+        if len(raised_perms) > 0:
+            raise commands.MissingPermissions(raised_perms)
+        return True
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        self.session.add(self.db.Admin(guild_id=guild.id))
+        self.session.commit()
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        try:
+            self.session.delete(self.admin(guild))
+            self.session.commit()
+        except sqlalchemy.orm.exc.UnmappedInstanceError:
+            pass
+
+    @commands.group(name='settings', aliases=['setting'])
+    async def _settings(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(str(ctx.command))
+
+    @_settings.command(name='prefix')
+    async def _prefix(self, ctx, prefix):
+        guild = self.db.get(self.db.Guild.guild_id == ctx.guild.id)
+        if '@' in prefix or '#' in prefix or '/' in prefix:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.bad_argument', '{error} Prefix can\'t contain `#`, `@` or `/` characters.'))
+        elif len(prefix) > 4:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.too_long', '{error} Prefix can\'t be longer than 4 characters.'))
+        else:
+            guild.prefix = prefix
+            self.session.commit()
+            await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.updated', '{success} **Prefix changed!** Now the prefix is: `{prefix}`'))
+
+    @_settings.command(name='language')
+    @commands.is_owner()
+    @commands.bot_has_permissions(manage_roles=True)
+    async def _language(self, ctx, *, language=None):
+        avaiable_languages = {}
+        for lang in os.listdir('config/i18n/'):
+            lang_file = self.msg.parse('config/i18n/' + lang)
+            if lang.replace('.json', '') == self.bot.current_lang(ctx.message):
+                lang_split = lang_file['language_name'].split(' ')
+                lang_split[1] = '**' + lang_split[1] + '**'
+                avaiable_languages[lang.replace('.json', '')] = ' '.join(lang_split)
+            else:
+                avaiable_languages[lang.replace('.json', '')] = lang_file['language_name']
+
+        if language is None:
+            prefix = list(await self.bot.get_prefix(ctx.message))[-1]
+            e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'admin.settings.language.title', 'Language Settings'), description=f'`{prefix}setting language [language]`')
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.language.avaiable_languages', 'Avaiable languages'), value=', '.join(avaiable_languages.values()), inline=True)
+            await ctx.send(embed=e)
+        else:
+            guild = self.db.get(self.db.Guild.guild_id == ctx.guild.id)
+            muted_role = discord.utils.get(ctx.guild.roles, name=self.msg.get(ctx, 'mod.mute.role', 'Muted'))
+            old_lang = guild.language
+            for lang_code, lang_name in avaiable_languages.items():
+                lang_lower = lang_name.split(' ')
+                lang_lower.remove(lang_lower[0])
+                if language.lower() == ''.join(lang_lower).lower():
+                    new_lang_name = lang_name
+                    guild.language = lang_code
+                    self.session.commit()
+                    await muted_role.edit(name=self.msg.get(ctx, 'mod.mute.role', 'Muted'))
+            if guild.language == old_lang:
+                await ctx.send(self.msg.get(ctx, 'admin.settings.language.not_exist', '{error} **That language isn\'t avaiable!** See all the languages avaiable with: `{prefix}setting language`'))
+            else:
+                await ctx.send(self.msg.format(self.msg.get(ctx, 'admin.settings.language.updated', '{success} **Language changed!** Now the bot\'s language for this server is: **{langName}**'), langName=new_lang_name))
+
+    @_settings.group(name='messages', aliases=['msg', 'message'])
+    async def _messages(self, ctx):
+        if ctx.invoked_subcommand is None:
+            admin = self.admin(ctx.guild)
+            e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'admin.settings.messages.title', 'Messages'))
+
+            join_message = admin.join_message.format_map(self.msg.placeholders(ctx.message)) if admin.join_message else None
+            leave_message = admin.leave_message.format_map(self.msg.placeholders(ctx.message)) if admin.leave_message else None
+
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.join_message.title', '**Join Message** (JM)'), value=(join_message[:64] + '...' if len(join_message) > 64 else join_message) if join_message else self.msg.get(ctx, 'admin.settings.messages.join_message.disable', 'Join Message isn\'t set.'), inline=True)
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.join_message.text_channel', '**JM** Text Channel'), value=f'<#{admin.join_message_textChannel}>' if admin.join_message_textChannel else self.msg.get(ctx, 'admin.settings.messages.text_channel.not_set', '{error} Not set'), inline=True)
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.join_message.sendInDm', '**JM** Send in DM'), value=f"<:athomos_success:600278477421281280> {self.msg.get(ctx, 'miscellaneous.enabled', 'Enabled')}" if admin.join_message_sendInDM else f"<:athomos_error:600278499055370240> {self.msg.get(ctx, 'miscellaneous.disabled', 'Disabled')}", inline=True)
+
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.leave_message.title', '**Leave Message** (LM)'), value=(leave_message[:64] + '...' if len(leave_message) > 64 else leave_message) if leave_message else self.msg.get(ctx, 'admin.settings.messages.leave_message.disable', 'Leave Message isn\'t set.'), inline=True)
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.leave_message.text_channel', '**LM** Text Channel'), value=f'<#{admin.leave_message_textChannel}>' if admin.leave_message_textChannel else self.msg.get(ctx, 'admin.settings.messages.text_channel.not_set', '{error} Not set'), inline=True)
+            e.add_field(name='\u200b', value='\u200b', inline=True)  # Spacer
+
+            e.set_footer(text=self.msg.get(ctx, 'admin.settings.messages.footer', 'You can customize these messages using placeholders.\nSee them with: {prefix}settings messages placeholders'))
+
+            await ctx.send(embed=e)
+
+    @_messages.command(name='placeholders', aliases=['ph'])
+    async def _messages_placeholders(self, ctx):
+        e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'admin.settings.messages.placeholders.title', 'Messages Placeholders'), description='1. `{JoinedAtDate}` - ' + f"({ctx.author.joined_at.strftime('%d/%m/%Y')})\n" + '2. `{JoinedAtTime}` - ' + f"({ctx.author.joined_at.strftime('%H:%M')})\n" + '3. `{Mention}` - ' + f"({ctx.author.mention})\n" + '4. `{Username}` - ' + f"({ctx.author.name})\n" + '5. `{ServerName}` - ' + f"({ctx.guild.name})\n" + '6. `{ServerMembersCount}` - ' + f"({len(ctx.guild.members)})")
+        e.set_footer(text=self.msg.get(ctx, 'admin.settings.messages.placeholders.footer', 'You can use these placeholders to customize messages.'))
+        await ctx.send(embed=e)
+
+    @_messages.group(name='join', invoke_without_command=True, case_insensitive=True)
+    async def _messages_join(self, ctx, *, welcome_message):
+        if ctx.invoked_subcommand is None:
+            admin = self.admin(ctx.guild)
+
+            already_exist = admin.join_message
+            admin.join_message = welcome_message
+            if not admin.join_message_textChannel:
+                admin.join_message_textChannel = ctx.channel.id
+            self.session.commit()
+
+            if already_exist:
+                await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.title.updated', '{success} **Welcome message updated!**'))
+            else:
+                await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.title.created', '{success} **Welcome message set!**'))
+
+            main_command = ctx.command.parent
+            await main_command(ctx)
+
+    @_messages_join.command(name='channel')
+    async def _messages_join_textChannel(self, ctx, text_channel: discord.TextChannel=None):
+        admin = self.admin(ctx.guild)
+
+        if admin.join_message:
+            admin.join_message_textChannel = ctx.message.channel.id if text_channel is None else text_channel.id
+            self.session.commit()
+        else:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.not_set', '{error} **Welcome message isn\'t set!** You can set it with: `{prefix}settings messages join [welcome message]`'))
+
+        main_command = ctx.command.parent.parent
+        await main_command(ctx)
+
+    @_messages_join.command(name='sendInDm')
+    async def _messages_join_sendInDm(self, ctx):
+        admin = self.admin(ctx.guild)
+        if admin.join_message:
+            if admin.join_message_sendInDM:
+                admin.join_message_sendInDM = False
+            else:
+                admin.join_message_sendInDM = True
+            self.session.commit()
+
+            main_command = ctx.command.parent.parent
+            await main_command(ctx)
+        else:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.not_set', '{error} **Welcome message isn\'t set!** You can set it with: `{prefix}settings messages join [welcome message]`'))
+
+    @_messages_join.command(name='remove', aliases=['clear', 'delete'])
+    async def _messages_join_remove(self, ctx):
+        admin = self.admin(ctx.guild)
+        already_exist = admin.join_message
+        if already_exist:
+            admin.join_message = None
+            admin.join_message_textChannel = None
+            admin.join_message_sendInDM = False
+            self.session.commit()
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.removed', '{success} **Welcome message removed!**'))
+        else:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.not_set', '{error} **Welcome message isn\'t set!** You can set it with: `{prefix}settings messages join [welcome message]`'))
+
+    @_messages.group(name='leave', invoke_without_command=True, case_insensitive=True)
+    async def _messages_leave(self, ctx, *, leave_message):
+        if ctx.invoked_subcommand is None:
+            admin = self.admin(ctx.guild)
+
+            already_exist = admin.leave_message
+            admin.leave_message = leave_message
+            if not admin.leave_message_textChannel:
+                admin.leave_message_textChannel = ctx.channel.id
+            self.session.commit()
+
+            if already_exist:
+                await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.updated', '{success} **Leave message updated!**'))
+            else:
+                await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.created', '{success} **Leave message set!**'))
+
+            main_command = ctx.command.parent
+            await main_command(ctx)
+
+    @_messages_leave.command(name='channel')
+    async def _messages_leave_textChannel(self, ctx, text_channel: discord.TextChannel=None):
+        admin = self.admin(ctx.guild)
+
+        if admin.leave_message:
+            admin.leave_message_textChannel = ctx.message.channel.id if text_channel is None else text_channel.id
+            self.session.commit()
+
+            main_command = ctx.command.parent.parent
+            await main_command(ctx)
+        else:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.remove.not_set', '{error} **Leave message isn\'t set!** You can set it with: `{prefix}settings messages leave [leave message]`'))
+
+    @_messages_leave.command(name='remove', aliases=['clear', 'delete'])
+    async def _messages_leave_remove(self, ctx):
+        admin = self.admin(ctx.guild)
+        already_exist = admin.leave_message
+        if already_exist:
+            admin.leave_message = None
+            admin.leave_message_textChannel = None
+            self.session.commit()
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.remove.removed', '{success} **Leave message removed!**'))
+        else:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.remove.not_set', '{error} **Leave message isn\'t set!** You can set it with: `{prefix}settings messages leave [leave message]`'))
+
+    @_settings.group(name='joinroles', aliases=['joinrole', 'jr'], invoke_without_command=True)
+    async def _joinroles(self, ctx):
+        if ctx.invoked_subcommand is None:
+            admin = self.admin(ctx.guild)
+            if admin.welcome_roles:
+                roles = [ctx.message.guild.get_role(int(role)).mention for role in admin.welcome_roles.split(' ')]
+                await ctx.send(embed=discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'admin.settings.joinroles.title', 'Welcome Roles'), description=', '.join(roles)))
+            else:
+                await ctx.send(self.msg.get(ctx, 'admin.settings.joinroles.not_set', '{error} **Welcome roles are\'t set!** You can set them with: `{prefix}setting joinroles add <role(s)>`'))
+
+    @_joinroles.command(name='add')
+    async def _joinroles_add(self, ctx, *roles: discord.Role):
+        admin = self.admin(ctx.guild)
+        if roles == ():
+            class Param:
+                name = self.msg.get(ctx, 'args.roles', 'roles')
+            raise commands.MissingRequiredArgument(Param)
+        intersection = set(admin.welcome_roles.split(' ')).intersection(set([str(role.id) for role in roles]))
+        if len(list(intersection)) > 0:
+            if len(list(intersection)) > 1:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.already_exist.multi', '{error} Roles {roles} are already welcome roles!'), roles=', '.join([ctx.message.guild.get_role(int(role)).mention for role in list(intersection)]))
+            else:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.already_exist.single', '{error} Role {role} is already a welcome role!'), role=', '.join([ctx.message.guild.get_role(int(role)).mention for role in list(intersection)]))
+            await ctx.send(message)
+        elif ctx.guild.default_role in roles:
+            await ctx.send(self.msg.get(ctx, 'admin.settings.joinroles.add.cannot_add_everyone', '{error} You cannot add the `@everyone` role to welcome roles.'))
+        else:
+            admin.welcome_roles = ' '.join(list(dict.fromkeys([str(role.id) for role in roles] + admin.welcome_roles.split(' ')))).rstrip()
+            self.session.commit()
+            if len([str(role.id) for role in roles]) > 1:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.add.multi', '{success} Roles {roles} added to welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
+            else:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.add.single', '{success} Role {role} added to welcome roles!'), role=', '.join([str(role.mention) for role in roles]))
+            await ctx.send(message)
+
+    @_joinroles.command(name='remove')
+    async def _joinroles_remove(self, ctx, *roles: discord.Role):
+        admin = self.admin(ctx.guild)
+        if roles == ():
+            class Param:
+                name = self.msg.get(ctx, 'args.roles', 'roles')
+            raise commands.MissingRequiredArgument(Param)
+        intersection = set(admin.welcome_roles.split(' ')).intersection(set([str(role.id) for role in roles]))
+        if not len(list(intersection)) > 0:
+            if len(list(intersection)) > 1:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.not_exist.multi', '{error} Roles {roles} aren\'t welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
+            else:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.not_exist.single', '{error} Role {role} isn\'t a welcome role!'), role=', '.join([str(role.mention) for role in roles]))
+            await ctx.send(message)
+        else:
+            admin.welcome_roles = ' '.join([i for i in admin.welcome_roles.split(' ') if i not in list(dict.fromkeys([str(role.id) for role in roles]))]).rstrip()
+            self.session.commit()
+            if len([str(role.id) for role in roles]) > 1:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.remove.removed.multi', '{success} Roles {roles} removed from welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
+            else:
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.remove.removed.single', '{success} Role {role} removed from welcome roles!'), role=', '.join([str(role.mention) for role in roles]))
+            await ctx.send(message)
+
+
+def setup(bot):
+    bot.add_cog(Admin(bot))

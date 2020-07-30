@@ -1,0 +1,6 @@
+
+*.pyc
+data.db
+ffmpeg.exe
+*.log
+start.bat
