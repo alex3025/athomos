@@ -5,3 +5,4 @@ ffmpeg.exe
 *.log
 start.bat
 config/settings.ini
+cogs/api.py
