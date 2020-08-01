@@ -40,9 +40,9 @@ class Athomos(commands.Bot):
             return
         return commands.when_mentioned_or(self.db.get(self.db.Guild.guild_id == message.guild.id).prefix)(bot, message)
 
-    @tasks.loop(minutes=15.0)
+    @tasks.loop(minutes=5.0)
     async def update_stats(self):
-        self.log.debug('Updating presence...')
+        self.log.debug('Updating stats on Discord...')
 
         def round_(n):
             return str(n // 1000) + 'k' if n >= 1000 else n
