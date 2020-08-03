@@ -1,7 +1,182 @@
 {
-    "languageName": ":flag_gb: English",
+    "language_name": ":flag_gb: English",
+ 
+    "paginator": {
+        "pages": "Page {current_page}/{all_pages}"
+    },
+
+    "admin": {
+        "settings": {
+            "prefix": {
+                "bad_argument": "{error} Prefix can't contain `#`, `@` or `/` characters.",
+                "too_long": "{error} Prefix can't be longer than 4 characters.",
+                "updated": "{success} **Prefix changed!** Now the prefix is: `{prefix}`"
+            },
+
+            "language": {
+                "title": "Language Settings",
+                "avaiable_languages": "Avaiable languages",
+                "not_exist": "{error} **That language isn't avaiable!** See all the languages avaiable with: `{prefix}setting language`",
+                "updated": "{success} **Language changed!** Now the bot's language for this server is: **{langName}**"
+                
+            },
+
+            "messages": {
+                "join_message": {
+                    "title": "**Join Message** (JM)",
+                    "text_channel": "**JM** Text Channel",
+                    "sendInDm": "**JM** Send in DM"
+                },
+                
+                "leave_message": {
+                    "title": "**Leave Message** (LM)",
+                    "text_channel": "**LM** Text Channel"
+                },
+
+                "footer": "You can customize these messages using placeholders.nSee them with: {prefix}settings messages placeholders",
+                "placeholders": {
+                    "title": "Messages Placeholders",
+                    "footer": "You can use these placeholders to customize messages."
+                },
+
+                "join": {
+                    "title": {
+                        "updated": "{success} **Welcome message updated!**",
+                        "created": "{success} **Welcome message set!**" 
+                    },
+                    "not_set": "{error} **Welcome message isn't set!** You can set it with: `{prefix}settings messages join [welcome message]`",
+                    "removed": "{success} **Welcome message removed!**"
+                },
+
+                "leave": {
+                    "updated": "{success} **Leave message updated!**",
+                    "created": "{success} **Leave message set!**",
+                    "remove":{
+                        "not_set": "{error} **Leave message isn't set!** You can set it with: `{prefix}settings messages leave [leave message]`",
+                        "removed": "{success} **Leave message removed!**"
+                    }
+                }
+
+            },
+
+            "joinroles": {
+                "not_set": "{error} **Welcome roles are't set!** You can set them with: `{prefix}setting joinroles add <role(s)>`",
+                "already_exist": {
+                    "multi": "{error} Roles {roles} are already welcome roles!",
+                    "single": "{error} Role {role} is already a welcome role!"
+                },
+
+                "add": {
+                    "cannot_add_evryone": "{error} You cannot add the `@everyone` role to welcome roles.",
+                    "multi": "{success} Roles {roles} added to welcome roles!",
+                    "single": "{success} Role {role} added to welcome roles!"
+                },
+
+                "not_exist": {
+                    "multi": "{error} Roles {roles} aren't welcome roles!",
+                    "single": "{error} Role {role} isn't a welcome role!"
+                },
+
+                "remove": {
+                    "removed": {
+                        "multi": "{success} Roles {roles} removed from welcome roles!",
+                        "single": "{success} Role {role} removed from welcome roles!"
+                    }
+                }
+            }
+        }
+    },
+
+    "args": {
+        "roles": "roles"
+    },
+
+    "customcommands": {
+        "add": {
+            "is_bot_command": "{error} You cannot overwrite a bot command.",
+            "added": "{success} Custom command `{prefix}{name}` created.",
+            "already_exist": "{error} That custom command already exist."
+        },
+
+        "remove": {
+            "removed": "{success} Custom command `{prefix}{name}` removed.",
+            "not_found": "{error} That custom command doesn't exist."
+        },
+
+        "list": {
+            "title": "Custom commands:"
+        }
+    },
+
+    "errors": {
+        "member_not_found": "{error} Member `{member}` not found.",
+        "role_not_found": "{error} Role `{role}` not found!",
+        "text_channel_not_found": "{error} Text Channel `{text_channel}` not found!",
+        "missing_argument": "{error} **Syntax error!** Use: `{prefix}%s %s`.",
+        "missing_permission": "{error} **Missing permissions!** To run this command you need these permissions: `{permissions}`.",
+        "bot_missing_permissions": "{error} **Missing bot permissions!** To run this command I need these permissions: `{permissions}`.",
+        "disabled_command": "{error} This command is **disabled** by the bot owner!",
+        "owner_only": "{error} This command can be **executed only** by the bot owner!"
+    },
 
     "command_descriptions": {
-        "clean": "BIG HELLO!"
+
+    },
+
+    "cog_name": {
+
+    },
+
+    "miscellaneous": {
+        "subcommand": "Subcommand",
+        "command": "Command"
+    },
+
+    "cogs_help": "",
+
+    "help": {
+        "group_headings": "Subcommands:",
+        "command_headings": "Commands:",
+        "subcommand_not_found": "{error} The subcommand `{name}` doesn't exist.",
+        "subcommand_not_exist": "{error} The command `{prefix}{command}` doesn't have subcommands.",
+        "command_not_found": "{error} The command `{prefix}{command}` doesn't exist.",
+        "title": "{name}'s Help",
+        "command_heading": "Command:",
+        "footer": {
+            "main": "You can use {prefix}help [command | category] for more info on a command or a category.",
+            "group": "You can use {prefix}help {command} [subcommand] for more info on a subcommand.",
+            "cog": "You can use {prefix}help [command] for more info on a command."
+        },
+        "links": {
+            "invite": "Invite",
+            "support": "Support",
+            "donate": "Donate",
+            "title": "Links"
+        },
+        "cogs": {
+            "title": "{cog_name} Commands",
+            "description_not_found": "This cog doesn't have a description."
+        },
+        "ping": "{state} Currently pinging: **{ping}ms**"
+    },
+
+    "mod": {
+        "mute": {
+            "role": "Muted"
+        },
+        "ban": {
+            "cannot_ban_owner": "{error} You cannot ban the server owner!",
+            "cannot_ban_bot": "{error} You cannot ban me!",
+            "cannot_ban_yourself": "{error} You cannot ban yourself!",
+            "dm": {
+                "reason": "You were banned from **{server}** by {author}.nReason: `{reason}`"
+            },
+            "audit": {
+                "reason": "You were banned from **{server}** by {author}."
+            },
+            "guild": {
+                
+            }
+        }
     }
 }
