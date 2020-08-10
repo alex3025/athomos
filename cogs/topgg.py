@@ -13,8 +13,9 @@ class TopGG(commands.Cog):
         self.config = Config()
         self.log = Logger()
 
-        self.dblpy = dbl.DBLClient(self.bot, self.config.dbl_token)
-        self.post_server_count.start()
+        if self.config.dbl_token:
+            self.dblpy = dbl.DBLClient(self.bot, self.config.dbl_token)
+            self.post_server_count.start()
 
     @tasks.loop(minutes=15.0)
     async def post_server_count(self):

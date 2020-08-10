@@ -54,12 +54,5 @@ class Database:
 
         customcommands = master.Column(master.String, default=r'{}')
 
-    class LiveFeed(Base):
-        __tablename__ = 'Live Feed'
-
-        guild_id = master.Column(master.Integer, primary_key=True, autoincrement=False)
-
-        twitch = master.Column(master.String, default=r'{}')
-
     def get(self, filter_, table=Guild):
         return self.session.query(table).filter(filter_).first()
