@@ -1,182 +1,465 @@
 {
-    "language_name": ":flag_gb: English",
- 
-    "paginator": {
-        "pages": "Page {current_page}/{all_pages}"
-    },
-
+    "language_name": ":flag_en: English",
     "admin": {
         "settings": {
-            "prefix": {
-                "bad_argument": "{error} Prefix can't contain `#`, `@` or `/` characters.",
-                "too_long": "{error} Prefix can't be longer than 4 characters.",
-                "updated": "{success} **Prefix changed!** Now the prefix is: `{prefix}`"
-            },
-
-            "language": {
-                "title": "Language Settings",
-                "avaiable_languages": "Avaiable languages",
-                "not_exist": "{error} **That language isn't avaiable!** See all the languages avaiable with: `{prefix}setting language`",
-                "updated": "{success} **Language changed!** Now the bot's language for this server is: **{langName}**"
-                
-            },
-
-            "messages": {
-                "join_message": {
-                    "title": "**Join Message** (JM)",
-                    "text_channel": "**JM** Text Channel",
-                    "sendInDm": "**JM** Send in DM"
-                },
-                
-                "leave_message": {
-                    "title": "**Leave Message** (LM)",
-                    "text_channel": "**LM** Text Channel"
-                },
-
-                "footer": "You can customize these messages using placeholders.nSee them with: {prefix}settings messages placeholders",
-                "placeholders": {
-                    "title": "Messages Placeholders",
-                    "footer": "You can use these placeholders to customize messages."
-                },
-
-                "join": {
-                    "title": {
-                        "updated": "{success} **Welcome message updated!**",
-                        "created": "{success} **Welcome message set!**" 
-                    },
-                    "not_set": "{error} **Welcome message isn't set!** You can set it with: `{prefix}settings messages join [welcome message]`",
-                    "removed": "{success} **Welcome message removed!**"
-                },
-
-                "leave": {
-                    "updated": "{success} **Leave message updated!**",
-                    "created": "{success} **Leave message set!**",
-                    "remove":{
-                        "not_set": "{error} **Leave message isn't set!** You can set it with: `{prefix}settings messages leave [leave message]`",
-                        "removed": "{success} **Leave message removed!**"
-                    }
-                }
-
-            },
-
             "joinroles": {
-                "not_set": "{error} **Welcome roles are't set!** You can set them with: `{prefix}setting joinroles add <role(s)>`",
-                "already_exist": {
-                    "multi": "{error} Roles {roles} are already welcome roles!",
-                    "single": "{error} Role {role} is already a welcome role!"
-                },
-
-                "add": {
-                    "cannot_add_evryone": "{error} You cannot add the `@everyone` role to welcome roles.",
+                "added": {
                     "multi": "{success} Roles {roles} added to welcome roles!",
                     "single": "{success} Role {role} added to welcome roles!"
                 },
-
-                "not_exist": {
-                    "multi": "{error} Roles {roles} aren't welcome roles!",
-                    "single": "{error} Role {role} isn't a welcome role!"
-                },
-
-                "remove": {
-                    "removed": {
-                        "multi": "{success} Roles {roles} removed from welcome roles!",
-                        "single": "{success} Role {role} removed from welcome roles!"
+                "errors": {
+                    "already_exist": {
+                        "multi": "{error} Roles {roles} are already welcome roles!",
+                        "single": "{error} Role {role} is already a welcome role!"
+                    },
+                    "cannot_add_everyone": "{error} You cannot add the `@everyone` role to welcome roles.",
+                    "disabled": "{error} **Welcome roles are't set!** You can set them with: `{prefix}setting joinroles add <role(s)>`",
+                    "not_exist": {
+                        "multi": "{error} Roles {roles} aren't welcome roles!",
+                        "single": "{error} Role {role} isn't a welcome role!"
                     }
-                }
+                },
+                "removed": {
+                    "multi": "{success} Roles {roles} removed from welcome roles!",
+                    "single": "{success} Role {role} removed from welcome roles!"
+                },
+                "title": "Welcome Roles"
+            },
+            "language": {
+                "available_languages": "Available languages",
+                "errors": {
+                    "not_exist": "{error} **That language isn't avaiable!** See all the languages avaiable with: `{prefix}setting language`"
+                },
+                "title": "Language Settings",
+                "updated": "{success} **Language changed!** Now the bot's language for this server is: **{language}**"
+            },
+            "messages": {
+                "footer": "You can customize these messages using placeholders.\nSee them with: {prefix}settings messages placeholders",
+                "join": {
+                    "errors": {
+                        "disabled": "{error} **Welcome message isn't set!** You can set it with: `{prefix}settings messages join [welcome message]`"
+                    },
+                    "removed": "{success} **Welcome message removed!**",
+                    "title": {
+                        "created": "{success} **Welcome message set!**",
+                        "updated": "{success} **Welcome message updated!**"
+                    }
+                },
+                "join_message": {
+                    "send_in_dm": "**JM** Send in DM",
+                    "text_channel": {
+                        "disabled": "{error} Not set",
+                        "title": "**JM** Text Channel"
+                    },
+                    "title": {
+                        "disabled": "Join Message isn't set.",
+                        "title": "**Join Message** (JM)"
+                    }
+                },
+                "leave": {
+                    "errors": {
+                        "disabled": "{error} **Leave message isn't set!** You can set it with: `{prefix}settings messages leave [leave message]`"
+                    },
+                    "removed": "{success} **Leave message removed!**",
+                    "title": {
+                        "created": "{success} **Leave message set!**",
+                        "updated": "{success} **Leave message updated!**"
+                    }
+                },
+                "leave_message": {
+                    "text_channel": {
+                        "disabled": "{error} Not set",
+                        "title": "**LM** Text Channel"
+                    },
+                    "title": {
+                        "disabled": "Leave Message isn't set.",
+                        "title": "**Leave Message** (LM)"
+                    }
+                },
+                "placeholders": {
+                    "footer": "You can use these placeholders to customize messages.",
+                    "title": "Messages Placeholders"
+                },
+                "title": "Messages"
+            },
+            "prefix": {
+                "errors": {
+                    "bad_prefix": "{error} Prefix can't contain `#`, `@` or `/` characters.",
+                    "too_long": "{error} Prefix can't be longer than {length} characters."
+                },
+                "updated": "{success} **Prefix changed!** Now the prefix is: `{prefix}`"
             }
         }
     },
-
-    "args": {
-        "roles": "roles"
+    "cog_names": {
+        "admin": "Administration :wrench:",
+        "customcommands": "Custom commands :pencil:",
+        "mod": "Moderation :hammer_pick:",
+        "music": "Music :headphones:",
+        "support": "Support :question:"
     },
-
-    "customcommands": {
-        "add": {
-            "is_bot_command": "{error} You cannot overwrite a bot command.",
-            "added": "{success} Custom command `{prefix}{name}` created.",
-            "already_exist": "{error} That custom command already exist."
-        },
-
-        "remove": {
-            "removed": "{success} Custom command `{prefix}{name}` removed.",
-            "not_found": "{error} That custom command doesn't exist."
-        },
-
-        "list": {
-            "title": "Custom commands:"
-        }
+    "command_arguments": {
+        "search": "search"
     },
-
-    "errors": {
-        "member_not_found": "{error} Member `{member}` not found.",
-        "role_not_found": "{error} Role `{role}` not found!",
-        "text_channel_not_found": "{error} Text Channel `{text_channel}` not found!",
-        "missing_argument": "{error} **Syntax error!** Use: `{prefix}%s %s`.",
-        "missing_permission": "{error} **Missing permissions!** To run this command you need these permissions: `{permissions}`.",
-        "bot_missing_permissions": "{error} **Missing bot permissions!** To run this command I need these permissions: `{permissions}`.",
-        "disabled_command": "{error} This command is **disabled** by the bot owner!",
-        "owner_only": "{error} This command can be **executed only** by the bot owner!"
-    },
-
     "command_descriptions": {
-
-    },
-
-    "cog_name": {
-
-    },
-
-    "miscellaneous": {
-        "subcommand": "Subcommand",
-        "command": "Command"
-    },
-
-    "cogs_help": "",
-
-    "help": {
-        "group_headings": "Subcommands:",
-        "command_headings": "Commands:",
-        "subcommand_not_found": "{error} The subcommand `{name}` doesn't exist.",
-        "subcommand_not_exist": "{error} The command `{prefix}{command}` doesn't have subcommands.",
-        "command_not_found": "{error} The command `{prefix}{command}` doesn't exist.",
-        "title": "{name}'s Help",
-        "command_heading": "Command:",
-        "footer": {
-            "main": "You can use {prefix}help [command | category] for more info on a command or a category.",
-            "group": "You can use {prefix}help {command} [subcommand] for more info on a subcommand.",
-            "cog": "You can use {prefix}help [command] for more info on a command."
-        },
-        "links": {
-            "invite": "Invite",
-            "support": "Support",
-            "donate": "Donate",
-            "title": "Links"
-        },
-        "cogs": {
-            "title": "{cog_name} Commands",
-            "description_not_found": "This cog doesn't have a description."
-        },
-        "ping": "{state} Currently pinging: **{ping}ms**"
-    },
-
-    "mod": {
-        "mute": {
-            "role": "Muted"
+        "announce": {
+            "desc": "Allows to send a message in all the channels of the server where the bot can write."
         },
         "ban": {
-            "cannot_ban_owner": "{error} You cannot ban the server owner!",
-            "cannot_ban_bot": "{error} You cannot ban me!",
-            "cannot_ban_yourself": "{error} You cannot ban yourself!",
-            "dm": {
-                "reason": "You were banned from **{server}** by {author}.nReason: `{reason}`"
+            "desc": "Allows you to ban a member."
+        },
+        "clean": {
+            "commands": {
+                "desc": "Allows you to delete a certain number of bot messages.\n\nDefault is 25."
             },
+            "desc": "Allows you to delete a certain number of messages.\n\nDefault is 25."
+        },
+        "customcommands": {
+            "add": {
+                "desc": "Allows you to create a new custom command."
+            },
+            "desc": "Show all custom commands for this server.",
+            "remove": {
+                "desc": "Allows you to remove a custom command."
+            }
+        },
+        "help": {
+            "desc": "Shows this message"
+        },
+        "kick": {
+            "desc": "Allows you to kick a member."
+        },
+        "mute": {
+            "desc": "Allows you to mute a member."
+        },
+        "nickname": {
+            "desc": "Allows you to manage a member's nickname."
+        },
+        "now": {
+            "desc": "Allows you to view the song that is being played."
+        },
+        "pause": {
+            "desc": "Allows you to pause playback."
+        },
+        "ping": {
+            "desc": "It allows you to control the latency (ping) of the bot."
+        },
+        "play": {
+            "desc": "Allows you to play a song.\n\nYou can provide a url or title of the song."
+        },
+        "queue": {
+            "desc": "Allows you to view the songs in the queue."
+        },
+        "remove": {
+            "desc": "Allows you to remove a song from the queue."
+        },
+        "report": {
+            "desc": "Allows you to report a member.\n\nIf you have the necessary permissions, you can set the channel where the reports will be sent.",
+            "disable": {
+                "desc": "Allows you to disable the channel dedicated to reports."
+            },
+            "set": {
+                "desc": "Allows you to set the channel where the reports will be sent."
+            }
+        },
+        "resume": {
+            "desc": "Allows you to resume playback."
+        },
+        "settings": {
+            "desc": "Allows you to manage the bot settings.",
+            "joinroles": {
+                "add": {
+                    "desc": "Allows you to add one or more roles to the list of joinroles."
+                },
+                "desc": "Allows you to configure the roles that will be given when a new user joins the server.",
+                "remove": {
+                    "desc": "Allows you to remove one or more roles from the list of joinroles."
+                }
+            },
+            "language": {
+                "desc": "Allows you to change the language of the bot."
+            },
+            "messages": {
+                "desc": "Allows you to manage the settings for join and leave messages.",
+                "join": {
+                    "channel": {
+                        "desc": "Allows you to set or modify the text channel where the join messages will be sent."
+                    },
+                    "desc": "Allows you to configure the join message.",
+                    "remove": {
+                        "desc": "Allows you to remove the join message."
+                    },
+                    "sendInDm": {
+                        "desc": "Allows you to choose whether to send the welcome message in DMs or in a text channel."
+                    }
+                },
+                "leave": {
+                    "channel": {
+                        "desc": "Allows you to set or modify the text channel where the leave messages will be sent."
+                    },
+                    "desc": "Allows you to configure the leave message.",
+                    "remove": {
+                        "desc": "Allows you to remove the leave message."
+                    }
+                },
+                "placeholders": {
+                    "desc": "Shows placeholders that can be used to customize join, leave, and custom commands."
+                }
+            },
+            "prefix": {
+                "desc": "Allows you to change the bot prefix."
+            }
+        },
+        "skip": {
+            "desc": "Allows you to vote to skip the current song.\n\nIf you have requested the current song, you can immediately skip without a vote."
+        },
+        "stop": {
+            "desc": "Allows you to stop playback."
+        },
+        "summon": {
+            "desc": "Allows you to invoke the bot in the current voice channel."
+        },
+        "unban": {
+            "desc": "Allows you to unban a user."
+        },
+        "unmute": {
+            "desc": "Allows you to unmute a member."
+        },
+        "volume": {
+            "desc": "Allows you to view, raise or lower the volume."
+        }
+    },
+    "customcommands": {
+        "add": {
+            "added": "{success} Custom command `{prefix}{name}` created.",
+            "errors": {
+                "already_exist": "{error} That custom command already exist.",
+                "is_bot_command": "{error} You cannot overwrite a bot command."
+            }
+        },
+        "remove": {
+            "errors": {
+                "not_found": "{error} That custom command doesn't exist."
+            },
+            "removed": "{success} Custom command `{prefix}{name}` removed."
+        },
+        "title": "Custom commands:"
+    },
+    "errors": {
+        "bot_missing_permissions": "{error} **Missing bot permissions!** To run this command I need these permissions: `{permissions}`.",
+        "disabled_command": "{error} This command is **disabled** by the bot owner!",
+        "member_not_found": "{error} Member `{member}` not found.",
+        "missing_argument": "{error} **Syntax error!** Use: `{prefix}{name} {subcommands}`.",
+        "missing_permissions": "{error} **Missing permissions!** To run this command you need these permissions: `{permissions}`.",
+        "owner_only": "{error} This command can be **executed only** by the bot owner!",
+        "role_not_found": "{error} Role `{role}` not found!",
+        "text_channel_not_found": "{error} Text Channel `{text_channel}` not found!"
+    },
+    "help": {
+        "bot": {
+            "title": "{name}'s Help"
+        },
+        "cog": {
+            "description_not_found": "This cog doesn't have a description.",
+            "title": "{cog_name} Commands"
+        },
+        "errors": {
+            "command_not_found": "{error} The command `{prefix}{command}` doesn't exist.",
+            "description_not_found": "This command doesn't have a description.",
+            "subcommand_not_exist": "{error} The command `{prefix}{command}` doesn't have subcommands.",
+            "subcommand_not_found": "{error} The subcommand `{name}` doesn't exist."
+        },
+        "footer": {
+            "bot": "You can use {prefix}help [command | category] for more info on a command or a category.",
+            "cog": "You can use {prefix}help [command] for more info on a command.",
+            "group": "You can use {prefix}help {command} [subcommand] for more info on a subcommand."
+        },
+        "group": {
+            "title": "Subcommands:"
+        },
+        "headings": {
+            "commands": "Commands:",
+            "subcommands": "Subcommands:"
+        },
+        "links": {
+            "donate": "Donate",
+            "invite": "Invite",
+            "support": "Support",
+            "title": "Links :pushpin:"
+        }
+    },
+    "language_name": ":flag_gb: English",
+    "miscellaneous": {
+        "command": "Command",
+        "disabled": "Disabled",
+        "enabled": "Enabled",
+        "subcommand": "Subcommand"
+    },
+    "mod": {
+        "announce": {
+            "title": "Announcement"
+        },
+        "ban": {
             "audit": {
-                "reason": "You were banned from **{server}** by {author}."
+                "no_reason": "Banned by {author}.",
+                "reason": "Banned by {author}.\nReason: {reason}"
+            },
+            "dm": {
+                "no_reason": "You were banned from **{server}** by {author}.",
+                "reason": "You were banned from **{server}** by {author}.\nReason: `{reason}`"
+            },
+            "errors": {
+                "cannot_ban_this_member": "{error} You cannot ban this member!",
+                "missing_permissions": "{error} You don't have the permissions to ban this member."
             },
             "guild": {
-                
+                "no_reason": "{success} Banned {banned} from this server.",
+                "reason": "{success} Banned {banned} from this server.\nReason: `{reason}`"
+            }
+        },
+        "clean": {
+            "cleaned": "{success} Removed **{deleted}** messages.",
+            "errors": {
+                "too_many_messages": "{error} **Too many messages!** Try a lower number. ({limit}/2000)"
+            }
+        },
+        "kick": {
+            "audit": {
+                "no_reason": "Kicked by {author}.",
+                "reason": "Kicked by {author}.\nReason: {reason}"
+            },
+            "dm": {
+                "no_reason": "You were kicked from **{server}** by {author}.",
+                "reason": "You were kicked from **{server}** by {author}.\nReason: `{reason}`"
+            },
+            "errors": {
+                "cannot_kick_this_member": "{error} You cannot kick this member!",
+                "missing_permissions": "{error} You don't have the permissions to kick this member."
+            },
+            "guild": {
+                "no_reason": "{success} Kicked {kicked} from this server.",
+                "reason": "{success} Kicked {kicked} from this server.\nReason: `{reason}`"
+            }
+        },
+        "mute": {
+            "audit": {
+                "no_reason": "Muted by {author}.",
+                "reason": "Muted by {author}.\nReason: {reason}"
+            },
+            "errors": {
+                "already_muted": "{error} This user is already muted!",
+                "cannot_mute_this_member": "{error} You cannot mute this member!",
+                "missing_permissions": "{error} You don't have the permissions to mute this member."
+            },
+            "guild": {
+                "no_reason": "{success} {muted} was muted by {author}.",
+                "reason": "{success} Muted {muted} by {author}.\nReason: `{user}`"
+            },
+            "role": {
+                "created": "The muted role didn't exist or it was deleted.",
+                "name": "Muted"
+            }
+        },
+        "nickname": {
+            "changed": "{success} You changed the nickname of **{user}** to `{nickname}`.",
+            "errors": {
+                "cannot_change_nickname": "{error} I can't change the nickname of that member.",
+                "missing_permissions": "{error} You don't have the permissions to change the nickname to this member."
+            },
+            "removed": "{success} You removed the nickname of **{user}**."
+        },
+        "ping": "{state} Currently pinging: **{ping}ms**",
+        "report": {
+            "errors": {
+                "channel_not_set": {
+                    "full": "{error} **Reports channel not set!** You can set it with: `{prefix}report set <channel>`.",
+                    "simple": "{error} **Reports channel not set!** Contact an administrator to configure it."
+                },
+                "reason_too_long": "{error} **Reasong too long!** Maximum 1024 characters allowed."
+            },
+            "reason": "Reason:",
+            "remove": {
+                "disabled": "{success} Reports channel disabled."
+            },
+            "reported": "User reported:",
+            "set": {
+                "changed": "{success} **Reports channel changed!** Now all reports will be sent to {channel}.",
+                "new": "{success} **Reports channel configured!** Now all reports will be sent to {channel}."
+            },
+            "title": "Report"
+        },
+        "unban": {
+            "audit": {
+                "no_reason": "Unbanned by {author}.",
+                "reason": "Unbanned by {author}.\nReason: {reason}"
+            },
+            "errors": {
+                "user_not_found": "{error} Banned user `{user}` not found."
+            },
+            "guild": {
+                "no_reason": "{success} Unbanned {unbanned} from this server.",
+                "reason": "{success} Unbanned {unbanned} from this server.\nReason: `{reason}`"
+            }
+        },
+        "unmute": {
+            "audit": {
+                "no_reason": "Unmuted by {author}.",
+                "reason": "Unmuted by {author}.\nReason: {reason}"
+            },
+            "errors": {
+                "missing_permissions": "{error} You don't have the permissions to unmute this member.",
+                "not_muted": "{error} This user isn't muted!"
+            },
+            "guild": {
+                "no_reason": "{success} {unmuted} was unmuted by {author}.",
+                "reason": "{success} {unmuted} was unmuted.\nReason: `{reason}`"
             }
         }
+    },
+    "music": {
+        "errors": {
+            "bot_already_connect": "{error} I'm already connected to a voice channel!",
+            "not_found": "{error} No results found for: `{search}`.",
+            "not_playing": "{error} I'm not playing anything.",
+            "user_not_connected": "{error} You aren't connected to a voice channel!"
+        },
+        "now_playing": "**Now playing:** `{title}` requested by {requester}.",
+        "play": {
+            "duration": "Duration:",
+            "requester": "Requested by:",
+            "song_title": "Title:",
+            "title": "{success} Song added to the queue! [{position}]",
+            "uploader": "Uploaded by:"
+        },
+        "queue": {
+            "empty": "{error} The queue is empty.",
+            "requester": "Requested by {requester}",
+            "title": "Music Queue:"
+        },
+        "remove": {
+            "cannot_remove_other": "{error} You can remove only songs requested by you.",
+            "removed": "{success} Removed `{removed}` from queue."
+        },
+        "skip": {
+            "already_voted": "{error} You have already voted to skip this song",
+            "vote_added": "{success} Skip vote added! Currently at **{votes}/3**."
+        },
+        "summon": {
+            "connected": "{success} Connected to **{channel}**!"
+        },
+        "volume": {
+            "current": {
+                "high": "\ud83d\udd0a Current volume is **{volume}%**.",
+                "low": "\ud83d\udd09 Current volume is **{volume}%**.",
+                "muted": "\ud83d\udd07 Current volume is **{volume}%**."
+            },
+            "down": "{success} Volume down to **{level}%**.",
+            "not_valid": "{error} Volume must be between **0** and **200**!",
+            "raised": "{success} Volume raised to **{level}%**.",
+            "same": "{error} Volume is already set to **{volume}%**."
+        }
+    },
+    "paginator": {
+        "pages": "Page {current_page}/{all_pages}"
     }
 }

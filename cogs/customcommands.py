@@ -11,6 +11,10 @@ from utils.paginator import EmbedPaginator
 
 
 class CustomCommands(commands.Cog):
+    """
+    Module containing commands useful for managing customized commands.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -57,25 +61,39 @@ class CustomCommands(commands.Cog):
     # Commands
     @commands.group(name='customcommands', aliases=['cc', 'customcommand'])
     async def _customcommands(self, ctx):
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(str(ctx.command))
+        """
+        Show all custom commands for this server.
+        """
+        fields = [{'**' + list(await self.bot.get_prefix(ctx.message))[-1] + name + '**': value.format_map(self.placeholders(ctx.message))} for name, value in json.loads(self.customcommands(ctx.guild).customcommands).items()]
+
+        e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.title', 'Custom commands:'))
+        pages = menus.MenuPages(source=EmbedPaginator(embed=e, fields=fields, ctx=ctx, per_page=5), clear_reactions_after=True)
+        await pages.start(ctx)
 
     @_customcommands.command(name='add', aliases=['create'])
     async def _customcommands_add(self, ctx, name, *, text):
+        """
+        Allows you to create a new custom command.
+        """
         customcommands = self.customcommands(ctx.guild)
         all_cc = json.loads(customcommands.customcommands)
+
         if self.bot.get_command(name):
-            return await ctx.send(self.msg.get(ctx, 'customcommands.add.is_bot_command', '{error} You cannot overwrite a bot command.'))
+            return await ctx.send(self.msg.get(ctx, 'customcommands.add.errors.is_bot_command', '{error} You cannot overwrite a bot command.'))
+
         if name not in all_cc:
             all_cc[name] = text
             customcommands.customcommands = json.dumps(all_cc)
             self.session.commit()
             await ctx.send(self.msg.format(self.msg.get(ctx, 'customcommands.add.added', '{success} Custom command `{prefix}{name}` created.'), name=name))
         else:
-            await ctx.send(self.msg.get(ctx, 'customcommands.add.already_exist', '{error} That custom command already exist.'))
+            await ctx.send(self.msg.get(ctx, 'customcommands.add.errors.already_exist', '{error} That custom command already exist.'))
 
     @_customcommands.command(name='remove', aliases=['delete'])
     async def _customcommands_remove(self, ctx, name):
+        """
+        Allows you to remove a custom command.
+        """
         customcommands = self.customcommands(ctx.guild)
         all_cc = json.loads(customcommands.customcommands)
         if name in all_cc:
@@ -84,15 +102,7 @@ class CustomCommands(commands.Cog):
             self.session.commit()
             await ctx.send(self.msg.format(self.msg.get(ctx, 'customcommands.remove.removed', '{success} Custom command `{prefix}{name}` removed.'), name=name))
         else:
-            await ctx.send(self.msg.get(ctx, 'customcommands.remove.not_found', '{error} That custom command doesn\'t exist.'))
-
-    @_customcommands.command(name='list')
-    async def _customcommands_list(self, ctx):
-        fields = [{'**' + list(await self.bot.get_prefix(ctx.message))[-1] + name + '**': value.format_map(self.placeholders(ctx.message))} for name, value in json.loads(self.customcommands(ctx.guild).customcommands).items()]
-
-        e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.list.title', 'Custom commands:'))
-        pages = menus.MenuPages(source=EmbedPaginator(embed=e, fields=fields, ctx=ctx, per_page=5), clear_reactions_after=True)
-        await pages.start(ctx)
+            await ctx.send(self.msg.get(ctx, 'customcommands.remove.errors.not_found', '{error} That custom command doesn\'t exist.'))
 
 
 def setup(bot):

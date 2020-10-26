@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import asyncio
 import discord
 from discord.ext import commands
@@ -95,8 +96,10 @@ class Athomos(commands.Bot):
                 self.run(self.config.bot_token, reconnect=True)
             else:
                 self.log.critical('Missing token, check the config file! Cannot start the bot.')
-        except:
+        except discord.errors.LoginFailure:
             self.log.critical('Unknow token, check the config file! Cannot start the bot.')
+        except:
+            self.log.exception('Cannot start the bot!')
 
 
 Athomos()

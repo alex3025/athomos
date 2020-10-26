@@ -1,7 +1,465 @@
 {
-    "languageName": ":flag_it: Italiano",
-
+    "language_name": ":flag_it: Italiano",
+    "admin": {
+        "settings": {
+            "joinroles": {
+                "added": {
+                    "multi": "{success} I ruoli {roles} sono aggiunti ai ruoli di benvenuto!",
+                    "single": "{success} Il ruolo {role} è stato aggiunto ai ruoli di benvenuto!"
+                },
+                "errors": {
+                    "already_exist": {
+                        "multi": "{error} I ruoli {roles} sono già dei ruoli di benvenuto!",
+                        "single": "{error} Il ruolo {role} è già un ruolo di benvenuto!"
+                    },
+                    "cannot_add_everyone": "{error} Non puoi aggiungere `@everyone` ai ruoli di benvenuto.",
+                    "disabled": "{error} **I ruoli di benvenuto non sono impostati!** Puoi impostarli con: `{prefix}setting joinroles add <ruolo/i>`",
+                    "not_exist": {
+                        "multi": "{error} I ruoli {roles} non sono dei ruoli di benvenuto!",
+                        "single": "{error} Il ruolo {role} non è un ruolo di benvenuto!"
+                    }
+                },
+                "removed": {
+                    "multi": "{success} I ruoli {roles} sono stati rimossi dai ruoli di benvenuto!",
+                    "single": "{success} Il ruolo {role} è stato rimosso dai ruoli di benvenuto!"
+                },
+                "title": "Ruoli di benvenuto"
+            },
+            "language": {
+                "available_languages": "Lingue disponibili",
+                "errors": {
+                    "not_exist": "{error} **Quella lingua non è disponibile!** Vedi tutte le lingue disponibili con: `{prefix}setting language`"
+                },
+                "title": "Impostazioni della lingua",
+                "updated": "{success} **Lingua cambiata!** Ora la lingua del bot in questo server sarà: **{language}**"
+            },
+            "messages": {
+                "footer": "Puoi personalizzare questi messaggi usando i placeholders.\nPuoi vederli con: {prefix}settings messages placeholders",
+                "join": {
+                    "errors": {
+                        "disabled": "{error} **Il messaggio di benvenuto non è stato impostato!** Puoi impostarlo con: `{prefix}settings messages join [welcome message]`"
+                    },
+                    "removed": "{success} **Il messaggio di benvenuto è stato rimosso!**",
+                    "title": {
+                        "created": "{success} **Il messaggio di benvenuto è stato creato!**",
+                        "updated": "{success} **Il messaggio di benvenuto è stato cambiato!**"
+                    }
+                },
+                "join_message": {
+                    "send_in_dm": "**JM** Invia nei DM",
+                    "text_channel": {
+                        "disabled": "{error} Non impostato",
+                        "title": "**JM** Canale testuale"
+                    },
+                    "title": {
+                        "disabled": "Il messaggio di benvenuto non è impostato.",
+                        "title": "**Messaggio di benvenuto** (JM)"
+                    }
+                },
+                "leave": {
+                    "errors": {
+                        "disabled": "{error} **Il messaggio di uscita non è stato impostato!** Puoi impostarlo con: `{prefix}settings messages leave [leave message]`"
+                    },
+                    "removed": "{success} **Il messaggio di uscita è stato rimosso!**",
+                    "title": {
+                        "created": "{success} **Il messaggio di uscita è stato creato!**",
+                        "updated": "{success} **Il messaggio di benvenuto è stato cambiato!**"
+                    }
+                },
+                "leave_message": {
+                    "text_channel": {
+                        "disabled": "{error} Non impostato",
+                        "title": "**LM** Canale testuale"
+                    },
+                    "title": {
+                        "disabled": "Il messaggio di uscita non è impostato.",
+                        "title": "**Messaggio di uscita** (LM)"
+                    }
+                },
+                "placeholders": {
+                    "footer": "Puoi usare questi placeholders per personalizzare i messaggi.",
+                    "title": "Placeholders per i messaggi"
+                },
+                "title": "Messaggi"
+            },
+            "prefix": {
+                "errors": {
+                    "bad_prefix": "{error} Il prefix non può contenere i caratteri `#`, `@` oppure `/`.",
+                    "too_long": "{error} Il prefix può essere lungo massimo {length} caratteri."
+                },
+                "updated": "{success} **Prefix cambiato!** Ora il prefix è: `{prefix}`"
+            }
+        }
+    },
+    "cog_names": {
+        "admin": "Amministrazione :wrench:",
+        "customcommands": "Comandi personalizzati :pencil:",
+        "mod": "Moderazione :hammer_pick:",
+        "music": "Musica :headphones:",
+        "support": "Supporto :question:"
+    },
+    "command_arguments": {
+        "search": "search"
+    },
     "command_descriptions": {
-        "clean": "CIAONE!"
+        "announce": {
+            "desc": "Manda un messaggio in tutti i canali del server in cui il bot ha il permesso di scrivere."
+        },
+        "ban": {
+            "desc": "Banna un membro."
+        },
+        "clean": {
+            "commands": {
+                "desc": "Cancella un certo numero di messaggi del bot.\n\nPreimpostato a 25."
+            },
+            "desc": "Cancella un certo numero di messaggi.\n\nPreimpostato a 25."
+        },
+        "customcommands": {
+            "add": {
+                "desc": "Crea un nuovo comando personalizzato."
+            },
+            "desc": "Mostra tutti i comandi personalizzati in questo server.",
+            "remove": {
+                "desc": "Rimuove un comando personalizzato."
+            }
+        },
+        "help": {
+            "desc": "Mostra il messaggio di aiuto."
+        },
+        "kick": {
+            "desc": "Espelle un membro."
+        },
+        "mute": {
+            "desc": "Muta un membro."
+        },
+        "nickname": {
+            "desc": "Gestisce il nickname di un membro."
+        },
+        "now": {
+            "desc": "Mostra il brano che sta venendo riprodotto."
+        },
+        "pause": {
+            "desc": "Mette in pausa la riproduzione."
+        },
+        "ping": {
+            "desc": "Mostra il ping (latenza) del bot."
+        },
+        "play": {
+            "desc": "Riproduce un brano.\n\nPuoi fornirne l'URL oppure il nome."
+        },
+        "queue": {
+            "desc": "Mostra i brani in coda."
+        },
+        "remove": {
+            "desc": "Rimuove un brano dalla coda."
+        },
+        "report": {
+            "desc": "Segnala un membro.\n\nSe hai i permessi necessari, puoi impostare il canale dove verranno inviate le segnalazioni.",
+            "disable": {
+                "desc": "Disabilita il canale dedicato alle segnalazioni."
+            },
+            "set": {
+                "desc": "Imposta il canale dove verranno inviate le segnalazioni."
+            }
+        },
+        "resume": {
+            "desc": "Riprende la riproduzione."
+        },
+        "settings": {
+            "desc": "Permette di gestire le impostazioni del bot in questo server.",
+            "joinroles": {
+                "add": {
+                    "desc": "Permette di aggiungere uno o più ruoli ai ruoli di benvenuto."
+                },
+                "desc": "Permette di configurare i ruoli che verranno assegnati quando un nuovo utente entrerà nel server.",
+                "remove": {
+                    "desc": "Permette di rimuovere uno o più ruoli ai ruoli di benvenuto."
+                }
+            },
+            "language": {
+                "desc": "Permette di cambiare la lingua del bot."
+            },
+            "messages": {
+                "desc": "Permette di controllare le impostazioni per i messaggi d'benvenuto e di uscita.",
+                "join": {
+                    "channel": {
+                        "desc": "Permette di impostare o modificare il canale testuale dove i messaggi di benvenuto verranno mandati."
+                    },
+                    "desc": "Permette di configurare il messaggio di benvenuto.",
+                    "remove": {
+                        "desc": "Permette di rimuovere il messaggio di benvenuto."
+                    },
+                    "sendInDm": {
+                        "desc": "Permette di scegliere se mandare il messaggio di benvenuto in privato o in un canale testuale."
+                    }
+                },
+                "leave": {
+                    "channel": {
+                        "desc": "Permette di impostare o modificare il canale testuale dove i messaggi di uscita verranno mandati."
+                    },
+                    "desc": "Permette di configurare il messaggio di uscita.",
+                    "remove": {
+                        "desc": "Permette di rimuovere il messaggio di uscita."
+                    }
+                },
+                "placeholders": {
+                    "desc": "Mostra dei segnalini usabili per personalizzare i comandi di entrata, uscita e comandi personalizzati."
+                }
+            },
+            "prefix": {
+                "desc": "Permette di cambiare il prefisso dei comandi del bot."
+            }
+        },
+        "skip": {
+            "desc": "Permette di saltare la canzone in corso.\n\nSe hai richiesto tu la canzone in corso, puoi saltarla immediatamente senza aver bisogno del voto."
+        },
+        "stop": {
+            "desc": "Permette di stoppare la riproduzione."
+        },
+        "summon": {
+            "desc": "Permette di invocare il bot nel canale vocale corrente."
+        },
+        "unban": {
+            "desc": "Permette di sbannare un utente."
+        },
+        "unmute": {
+            "desc": "Permette di smutare un membro."
+        },
+        "volume": {
+            "desc": "Permette di vedere, alzare o abbassare il volume."
+        }
+    },
+    "customcommands": {
+        "add": {
+            "added": "{success} Il comando personalizzato `{prefix}{name}` è stato creato con successo.",
+            "errors": {
+                "already_exist": "{error} Il comando personalizzato esiste già.",
+                "is_bot_command": "{error} Non puoi sovrascrivere un comando del bot."
+            }
+        },
+        "remove": {
+            "errors": {
+                "not_found": "{error} Il comando personalizzato non esiste."
+            },
+            "removed": "{success} Il comando personalizzato `{prefix}{name}` è stato rimosso con successo."
+        },
+        "title": "Comandi personalizzati:"
+    },
+    "errors": {
+        "bot_missing_permissions": "{error} **Permessi del bot mancanti!** Per esesguire questo comando ho bisogno di questi permessi: `{permissions}`.",
+        "disabled_command": "{error} Questo comando è stato **disattivato** dal proprietario del bot!",
+        "member_not_found": "{error} Membro `{member}` non trovato.",
+        "missing_argument": "{error} **Errore di sintassi!** Usa: `{prefix}{name} {subcommands}`.",
+        "missing_permissions": "{error} **Permessi mancanti!** Per eseguire questo comando hai bisogno di questi permessi: `{permissions}`.",
+        "owner_only": "{error} Questo comando può essere eseguito **solamente** dal proprietario del bot!",
+        "role_not_found": "{error} Ruolo `{role}` non trovato!",
+        "text_channel_not_found": "{error} Canale testuale `{text_channel}` non trovato!"
+    },
+    "help": {
+        "bot": {
+            "title": "Comandi di {name}"
+        },
+        "cog": {
+            "description_not_found": "Questo modulo non ha una descrizione.",
+            "title": "{cog_name} Commands"
+        },
+        "errors": {
+            "command_not_found": "{error} Il comando `{prefix}{command}` non esiste.",
+            "description_not_found": "Questo comando non ha una descrizione.",
+            "subcommand_not_exist": "{error} Il comando `{prefix}{command}` non ha sottocomandi.",
+            "subcommand_not_found": "{error} Il sottocomando `{name}` non esiste."
+        },
+        "footer": {
+            "bot": "Puoi usare {prefix}help [command | category] per più informazioni su un comando o una categoria.",
+            "cog": "You can use {prefix}help [command] per più informazioni su un comando.",
+            "group": "Puoi usare {prefix}help {command} [subcommand] per più informazioni su un sottocomando."
+        },
+        "group": {
+            "title": "Sottocomandi:"
+        },
+        "headings": {
+            "commands": "Comandi:",
+            "subcommands": "Sottocomandi:"
+        },
+        "links": {
+            "donate": "Dona",
+            "invite": "Invita",
+            "support": "Supporto",
+            "title": "Links :pushpin:"
+        }
+    },
+    "miscellaneous": {
+        "command": "Comando",
+        "disabled": "Disattivato",
+        "enabled": "Attivato",
+        "subcommand": "Sottocomando"
+    },
+    "mod": {
+        "announce": {
+            "title": "Annuncio"
+        },
+        "ban": {
+            "audit": {
+                "no_reason": "Bannato da {author}.",
+                "reason": "Bannato da {author}.\nMotivo: {reason}"
+            },
+            "dm": {
+                "no_reason": "Sei stato bannato dal server **{server}**. Autore del ban: {author}.",
+                "reason": "Sei stato bannato dal server **{server}**. Autore del ban: {author}.\nMotivo: `{reason}`"
+            },
+            "errors": {
+                "cannot_ban_this_member": "{error} Non puoi bannare questo membro!",
+                "missing_permissions": "{error} Non hai i permessi per poter bannare questo membro."
+            },
+            "guild": {
+                "no_reason": "{success} L'utente {banned} è stato bannato da questo server.",
+                "reason": "{success} L'utente {banned} è stato bannato da questo server.\nMotivo: `{reason}`"
+            }
+        },
+        "clean": {
+            "cleaned": "{success} **{deleted}** messaggi rimossi con successo.",
+            "errors": {
+                "too_many_messages": "{error} **Troppi messaggi!** Riprova con un numero più basso. ({limit}/2000)"
+            }
+        },
+        "kick": {
+            "audit": {
+                "no_reason": "L'utente {kicked} è stato espulso da {author}.",
+                "reason": "L'utente {kicked} è stato espulso da {author}.\nMotivo: {reason}"
+            },
+            "dm": {
+                "no_reason": "Sei stato cacciato dal server **{server}**. Autore del kick: {author}.",
+                "reason": "Sei stato cacciato dal server **{server}**. Autore del kick: {author}.\nMotivo: `{reason}`"
+            },
+            "errors": {
+                "cannot_kick_this_member": "{error} Non puoi cacciare questo membro!",
+                "missing_permissions": "{error} Non hai i permessi per cacciare questo membro."
+            },
+            "guild": {
+                "no_reason": "{success} L'utente {kicked} è stato cacciato dal server.",
+                "reason": "{success} L'utente {kicked} è stato cacciato dal server.\nMotivo: `{reason}`"
+            }
+        },
+        "mute": {
+            "audit": {
+                "no_reason": "Mutato da {author}.",
+                "reason": "Mutato da {author}.\nMotivo: {reason}"
+            },
+            "errors": {
+                "already_muted": "{error} Questo utente è già mutato!",
+                "cannot_mute_this_member": "{error} Non puoi mutare questo membro!",
+                "missing_permissions": "{error} Non hai i permessi per mutare questo membro."
+            },
+            "guild": {
+                "no_reason": "{success} {muted} è stato mutato da {author}.",
+                "reason": "{success} {muted} è stato mutato da {author}.\nMotivo: `{reason}`"
+            },
+            "role": {
+                "created": "Il ruolo \"Mutato\" non esisteva o è stato cancellato",
+                "name": "Mutato"
+            }
+        },
+        "nickname": {
+            "changed": "{success} Nickname di **{user}** cambiato con successo. Il suo nuovo nickname ora è `{nickname}`.",
+            "errors": {
+                "cannot_change_nickname": "{error} Non posso cambiare il nickname di questo membro.",
+                "missing_permissions": "{error} Non hai i permessi per cambiare il nickname a questo membro."
+            },
+            "removed": "{success} Hai rimosso il nickname di **{user}**."
+        },
+        "ping": "{state} Ping attuale: **{ping}ms**",
+        "report": {
+            "errors": {
+                "channel_not_set": {
+                    "full": "{error} **Canale delle segnalazioni non impostato!** Puoi impostarlo: `{prefix}report set <channel>`.",
+                    "simple": "{error} **Canale delle segnalazioni non impostato!** Contatta un amministratore per configurarlo."
+                },
+                "reason_too_long": "{error} **Motivo troppo lungo!** Massimo 1024 caratteri permessi."
+            },
+            "reason": "Motivo:",
+            "remove": {
+                "disabled": "{success} Canale delle segnalazioni disattivato con successo."
+            },
+            "reported": "Utente segnalato:",
+            "report_sent": "{success} **Segnalazione inviata!** Un amministratore è stato avvertito.",
+            "set": {
+                "changed": "{success} **Canale delle segnalazioni cambiato!** Ora tutte le segnalazioni verranno mandate su {channel}.",
+                "new": "{success} **Canale delle segnalazioni configurato!** Ora tutte le segnalazioni verranno mandate su {channel}."
+            },
+            "title": "Segnalazione"
+        },
+        "unban": {
+            "audit": {
+                "no_reason": "Sbannato da {author}.",
+                "reason": "Sbannato da {author}.\nMotivo: {reason}"
+            },
+            "errors": {
+                "user_not_found": "{error} Banned user `{user}` not found."
+            },
+            "guild": {
+                "no_reason": "{success} L'utente {unbanned} è stato sbannato da questo server.",
+                "reason": "{success} L'utente {unbanned} è stato sbannato da questo server.\nMotivo: `{reason}`"
+            }
+        },
+        "unmute": {
+            "audit": {
+                "no_reason": "Smutato da {author}.",
+                "reason": "Smutato da {author}.\nMotivo: {reason}"
+            },
+            "errors": {
+                "missing_permissions": "{error} Non hai i permessi per smutare questo membro.",
+                "not_muted": "{error} Questo utente non è mutato!"
+            },
+            "guild": {
+                "no_reason": "{success} {unmuted} è stato smutato da {author}.",
+                "reason": "{success} {unmuted} è stato smutato da {author}.\nMotivo: `{reason}`"
+            }
+        }
+    },
+    "music": {
+        "errors": {
+            "bot_already_connect": "{error} Sono già connesso ad un canale vocale!",
+            "not_found": "{error} Nessun risultato trovato per: `{search}`.",
+            "not_playing": "{error} Non sto riproducendo nulla.",
+            "user_not_connected": "{error} Non sei connesso ad un canale vocale!"
+        },
+        "now_playing": "**In riproduzione:** `{title}` richiesto da {requester}.",
+        "play": {
+            "duration": "Durata:",
+            "requester": "Richiesto da:",
+            "song_title": "Titolo:",
+            "title": "{success} Canzone aggiunta alla coda! [{position}]",
+            "uploader": "Caricata da:"
+        },
+        "queue": {
+            "empty": "{error} La coda è vuota.",
+            "requester": "Richiesto da {requester}",
+            "title": "Coda musicale:"
+        },
+        "remove": {
+            "cannot_remove_other": "{error} Puoi rimuovere le canzoni richieste da te.",
+            "removed": "{success} `{removed}` rimosso dalla coda."
+        },
+        "skip": {
+            "already_voted": "{error} Hai già votato per saltare questa canzone!",
+            "vote_added": "{success} Voto aggiunto! **{votes}/3** voti per saltare la canzone."
+        },
+        "summon": {
+            "connected": "{success} Connesso a **{channel}**!"
+        },
+        "volume": {
+            "current": {
+                "high": "\ud83d\udd0a Volume attuale: **{volume}%**.",
+                "low": "\ud83d\udd09 Volume attuale: **{volume}%**.",
+                "muted": "\ud83d\udd07 Volume attuale: **{volume}%**."
+            },
+            "down": "{success} Volume abbassato a **{level}%**.",
+            "not_valid": "{error} Il volume deve essere compreso tra **0** e **200**!",
+            "raised": "{success} Volume alzato a **{level}%**.",
+            "same": "{error} Il volume è già al **{volume}%**."
+        }
+    },
+    "paginator": {
+        "pages": "Pagina {current_page} su {all_pages}"
     }
 }

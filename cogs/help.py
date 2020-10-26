@@ -25,7 +25,7 @@ class EmbedPaginator(commands.Paginator):
         self._count = 0
         self._pages = []
 
-    def add_line(self, line='\u200b', name='\u200b', inline=False, *, empty=False):
+    def add_line(self, line='\u200b', name='\u200b', inline=False, empty=False):
         max_page_size = self.max_size
         if len(line) > max_page_size:
             raise RuntimeError(f'Line exceeds maximum page size {max_page_size}')
@@ -60,7 +60,12 @@ class BotHelp(commands.DefaultHelpCommand):
         ctx = self.context
         qualified_name = [command.cog.qualified_name for command in commands][0]
 
-        self.paginator.add_line(', '.join(['`' + self.shorten_text(f'{self.clean_prefix}{command.qualified_name}') + '`' for command in commands]), heading if heading == msg.get(ctx, 'help.group_headings', 'Subcommands:') or heading == msg.get(ctx, 'help.command_headings', 'Commands:') else '**» ' + heading.replace(qualified_name, msg.get(ctx, 'cog_names.' + qualified_name.lower(), '')) + '**' if msg.get(ctx, 'cog_names.' + qualified_name.lower(), '') else heading)
+        if heading == msg.get(ctx, 'help.headings.subcommands', 'Subcommands:') or heading == msg.get(ctx, 'help.headings.commands', 'Commands:'):
+            name = heading
+        elif msg.get(ctx, 'cog_names.' + qualified_name.lower(), '') != '':
+            name = '» ' + msg.get(ctx, 'cog_names.' + qualified_name.lower(), heading)
+
+        self.paginator.add_line(line=', '.join(['`' + self.shorten_text(f'{self.clean_prefix}{command.qualified_name}') + '`' for command in commands]), name=name)
 
     def get_command_signature(self, command):
         parent = command.full_parent_name
@@ -76,10 +81,12 @@ class BotHelp(commands.DefaultHelpCommand):
 
     def add_command_formatting(self, command):
         signature = self.get_command_signature(command)
-        helpText = msg.get(self.context, 'command_descriptions.' + command.qualified_name.lower().replace(' ', '.'), '')
+        helpText = msg.get(self.context, 'command_descriptions.' + command.qualified_name.lower().replace(' ', '.') + '.desc', command.help if command.help else '')
+
         note = self.get_ending_note()
         if note:
             self.paginator._current_page.set_footer(text=note)
+
         signature = signature.replace('subcommand', msg.get(self.context, 'miscellaneous.subcommand', 'Subcommand').lower())
         signature = signature.replace('command', msg.get(self.context, 'miscellaneous.command', 'Command').lower())
 
@@ -95,11 +102,11 @@ class BotHelp(commands.DefaultHelpCommand):
             pass
 
         self.paginator._current_page.title = signature
-        self.paginator._current_page.description = helpText if helpText else msg.get(self.context, 'help.commands.description_not_found', 'This command doesn\'t have a description.')
+        self.paginator._current_page.description = helpText if helpText != '' else msg.get(self.context, 'help.errors.description_not_found', 'This command doesn\'t have a description.')
 
     def get_ending_note(self, src='bot', ctx=None):
         if src == 'bot':
-            return msg.get(self.context, 'help.footer.main', 'You can use {prefix}help [command | category] for more info on a command or a category.')
+            return msg.get(self.context, 'help.footer.bot', 'You can use {prefix}help [command | category] for more info on a command or a category.')
         elif src == 'group':
             return msg.format(msg.get(self.context, 'help.footer.group', 'You can use {prefix}help {command} [subcommand] for more info on a subcommand.'), command=ctx.qualified_name)
         elif src == 'cog':
@@ -107,11 +114,11 @@ class BotHelp(commands.DefaultHelpCommand):
 
     def subcommand_not_found(self, command, string):
         if isinstance(command, Group) and len(command.all_commands) > 0:
-            return msg.format(msg.get(self.context, 'help.subcommand_not_found', '{error} The subcommand `{name}` doesn\'t exist.'), name=string)
-        return msg.format(msg.get(self.context, 'help.subcommand_not_exist', '{error} The command `{prefix}{command}` doesn\'t have subcommands.'), command=command.qualified_name)
+            return msg.format(msg.get(self.context, 'help.errors.subcommand_not_found', '{error} The subcommand `{name}` doesn\'t exist.'), name=string)
+        return msg.format(msg.get(self.context, 'help.errors.subcommand_not_exist', '{error} The command `{prefix}{command}` doesn\'t have subcommands.'), command=command.qualified_name)
 
     def command_not_found(self, string):
-        return msg.format(msg.get(self.context, 'help.command_not_found', '{error} The command `{prefix}{command}` doesn\'t exist.'), command=string)
+        return msg.format(msg.get(self.context, 'help.errors.command_not_found', '{error} The command `{prefix}{command}` doesn\'t exist.'), command=string)
 
     async def send_pages(self):
         destination = self.get_destination()
@@ -122,7 +129,7 @@ class BotHelp(commands.DefaultHelpCommand):
         self.add_command_formatting(group)
 
         filtered = await self.filter_commands(group.commands, sort=self.sort_commands)
-        self.add_indented_commands(filtered, heading=msg.get(self.context, 'help.groups_heading', 'Subcommands:'))
+        self.add_indented_commands(filtered, heading=msg.get(self.context, 'help.headings.subcommands', 'Subcommands:'))
 
         if filtered:
             note = self.get_ending_note('group', group)
@@ -134,7 +141,7 @@ class BotHelp(commands.DefaultHelpCommand):
         ctx = self.context
         bot = ctx.bot
 
-        self.paginator._current_page.title = msg.format(msg.get(ctx, 'help.title', '{name}\'s Help'), name=bot.user.name)
+        self.paginator._current_page.title = msg.format(msg.get(ctx, 'help.bot.title', '{name}\'s Help'), name=bot.user.name)
 
         no_category = '\u200b{0.no_category}:'.format(self)
 
@@ -149,7 +156,9 @@ class BotHelp(commands.DefaultHelpCommand):
         for category, bot_commands in to_iterate:
             bot_commands = sorted(bot_commands, key=lambda c: c.name) if self.sort_commands else list(bot_commands)
             self.add_indented_commands(bot_commands, heading=category, max_size=max_size)
-        self.paginator.add_line(' | '.join([f"[{name}]({link})" for name, link in bot.help_links(ctx)]), '\u200b\n' + msg.get(ctx, 'help.links.title', 'Links'))
+
+        if bot.help_links(ctx):
+            self.paginator.add_line(' | '.join([f"[{name}]({link})" for name, link in bot.help_links(ctx)]), '\u200b\n» ' + msg.get(ctx, 'help.links.title', 'Links'))
 
         note = self.get_ending_note()
         if note:
@@ -157,17 +166,17 @@ class BotHelp(commands.DefaultHelpCommand):
         await self.send_pages()
 
     async def send_cog_help(self, cog):
-        helpText = msg.get(self.context, 'cogs_help', cog.qualified_name.split()[1] if len(cog.qualified_name.split()) > 1 else cog.qualified_name)
+        helpText = msg.get(self.context, 'cogs_help', cog.description)
         if len(cog.qualified_name.split()) > 1:
             name = cog.qualified_name.split()
             name.remove('»')
         else:
             name = cog.qualified_name
-        self.paginator._current_page.title = msg.format(msg.get(self.context, 'help.cogs.title', '{cog_name} Commands'), cog_name=name)
-        self.paginator._current_page.description = helpText if helpText else msg.get(self.context, 'help.cogs.description_not_found', 'This cog doesn\'t have a description.')
+        self.paginator._current_page.title = msg.format(msg.get(self.context, 'help.cog.title', '{cog_name} Commands'), cog_name=name)
+        self.paginator._current_page.description = helpText if helpText != '' else msg.get(self.context, 'help.cog.description_not_found', 'This cog doesn\'t have a description.')
 
         filtered = await self.filter_commands(cog.get_commands(), sort=self.sort_commands)
-        self.add_indented_commands(filtered, heading=msg.get(self.context, 'help.commands_heading', 'Commands:'))
+        self.add_indented_commands(filtered, heading=msg.get(self.context, 'help.headings.commands', 'Commands:'))
 
         note = self.get_ending_note('cog')
         if note:
@@ -223,19 +232,6 @@ class Support(commands.Cog):
         self._original_help_command = self.bot.help_command
         self.bot.help_command = BotHelp(paginator=EmbedPaginator())
         self.bot.help_command.cog = self
-
-    @commands.command(name='ping')
-    async def _ping(self, ctx):
-        ping = round(self.bot.latency * 1000, 2)
-
-        if ping >= 150.0:
-            ping_state = '🔴'
-        elif ping >= 50.0:
-            ping_state = '🟠'
-        elif ping <= 50.0:
-            ping_state = '🟢'
-
-        await ctx.send(msg.format(msg.get(ctx, 'help.ping', '{state} Currently pinging: **{ping}ms**'), state=ping_state, ping=ping))
 
 
 def setup(bot):

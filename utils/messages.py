@@ -37,6 +37,7 @@ class Messages:
         class format_dict(dict):
             def __missing__(self, key):
                 return '{%s}' % key
+
         return string.format_map(format_dict(placeholders))
 
     def get_locale(self, guildID: int):
@@ -55,4 +56,5 @@ class Messages:
         except (KeyError, FileNotFoundError):
             log.warning(f'Could not grab data from i18n key: {index}')
             data = fallback
+
         return self.format(data, success='<:athomos_success:600278477421281280>', error='<:athomos_error:600278499055370240>', prefix=db.get(db.Guild.guild_id == guild_id).prefix if guild_id else '!')

@@ -243,6 +243,10 @@ class VoiceState:
 
 
 class Music(commands.Cog):
+    """
+    Module containing commands dedicated to the music function.
+    """
+
     def __init__(self, bot):
         self.bot = bot
         self.voice_states = {}
@@ -264,6 +268,9 @@ class Music(commands.Cog):
 
     @commands.command(name='summon', aliases=['join'])
     async def _summon(self, ctx, *, channel: discord.VoiceChannel=None):
+        """
+        Allows you to invoke the bot in the current voice channel.
+        """
         destination = channel or ctx.author.voice.channel
         if ctx.voice_state.voice:
             return await ctx.voice_state.voice.move_to(destination)
@@ -273,12 +280,18 @@ class Music(commands.Cog):
 
     @commands.command(name='stop', aliases=['disconnect', 'leave', 'dc'])
     async def _stop(self, ctx):
+        """
+        Allows you to stop playback.
+        """
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
         await ctx.message.add_reaction('⏹')
 
     @commands.command(name='volume', aliases=['vol'])
     async def _volume(self, ctx, *, volume: int=None):
+        """
+        Allows you to view, raise or lower the volume.
+        """
         current_volume = ctx.voice_state.volume
 
         if volume is None:
@@ -310,10 +323,19 @@ class Music(commands.Cog):
 
     @commands.command(name='now', aliases=['nowplaying', 'playing', 'np'])
     async def _now_playing(self, ctx):
-        await ctx.send(str(ctx.voice_state.current))
+        """
+        Allows you to view the song that is being played.
+        """
+        if ctx.voice_state.current:
+            await ctx.send(str(ctx.voice_state.current))
+        else:
+            return await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
 
     @commands.command(name='pause')
     async def _pause(self, ctx):
+        """
+        Allows you to pause playback.
+        """
         if ctx.voice_state.voice.is_playing():
             ctx.voice_state.voice.pause()
             await ctx.message.add_reaction('⏸️')
@@ -322,6 +344,9 @@ class Music(commands.Cog):
 
     @commands.command(name='resume')
     async def _resume(self, ctx):
+        """
+        Allows you to resume playback.
+        """
         if ctx.voice_state.voice.is_paused():
             ctx.voice_state.voice.resume()
             await ctx.message.add_reaction('▶️')
@@ -330,6 +355,11 @@ class Music(commands.Cog):
 
     @commands.command(name='skip')
     async def _skip(self, ctx):
+        """
+        Allows you to vote to skip the current song.
+
+        If you have requested the current song, you can immediately skip without a vote.
+        """
         if not ctx.voice_state.is_playing:
             return await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
 
@@ -360,13 +390,16 @@ class Music(commands.Cog):
 
     @commands.command(name='queue', aliases=['q'])
     async def _queue(self, ctx,):
+        """
+        Allows you to view the songs in the queue.
+        """
         if len(ctx.voice_state.songs) == 0:
-            return await ctx.send(msg.get(ctx, 'music.errors.queue_empty', '{error} The queue is empty.'))
+            return await ctx.send(msg.get(ctx, 'music.queue.empty', '{error} The queue is empty.'))
 
         fields = []
         counter = 1
         for song in ctx.voice_state.songs:
-            fields.append({f'{counter}. **{song.source.title}** [{song.duration(ctx)}]': f'Requested by {song.requester.mention}'})
+            fields.append({f'{counter}. **{song.source.title}** [{song.duration(ctx)}]': msg.format(msg.get(ctx, 'music.queue.requester', 'Requested by {requester}'), requester=song.requester.mention)})
             counter += 1
 
         e = discord.Embed(colour=config.embeds_color, title=msg.get(ctx, 'music.queue.title', 'Music Queue:'))
@@ -375,8 +408,11 @@ class Music(commands.Cog):
 
     @commands.command(name='remove')
     async def _remove(self, ctx, index: int):
+        """
+        Allows you to remove a song from the queue.
+        """
         if len(ctx.voice_state.songs) == 0:
-            return await ctx.send(msg.get(ctx, 'music.errors.queue_empty', '{error} The queue is empty.'))
+            return await ctx.send(msg.get(ctx, 'music.queue.empty', '{error} The queue is empty.'))
 
         removed = ctx.voice_state.songs[index - 1]
 
@@ -400,6 +436,11 @@ class Music(commands.Cog):
 
     @commands.command(name='play', aliases=['p'])
     async def _play(self, ctx, *, search: str=None):
+        """
+        Allows you to play a song.
+
+        You can provide a url or title of the song.
+        """
         if search:
             if not ctx.voice_state.voice:
                 await ctx.invoke(self._summon)
@@ -420,17 +461,17 @@ class Music(commands.Cog):
             await ctx.invoke(self._resume)
         else:
             class Param:
-                name = msg.get(ctx, 'args.search', 'search')
+                name = msg.get(ctx, 'command_arguments.search', 'search')
             raise commands.MissingRequiredArgument(Param)
 
     @_play.before_invoke
     async def ensure_voice_state(self, ctx: commands.Context):
         if not ctx.author.voice or not ctx.author.voice.channel:
-            await ctx.send(msg.get(ctx, 'music.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
+            await ctx.send(msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
 
         if ctx.voice_client:
             if ctx.voice_client.channel != ctx.author.voice.channel:
-                await ctx.send(msg.get(ctx, 'music.bot_already_connected', '{error} I\'m already connected to a voice channel!'))
+                await ctx.send(msg.get(ctx, 'music.errors.bot_already_connected', '{error} I\'m already connected to a voice channel!'))
 
 
 def setup(bot):

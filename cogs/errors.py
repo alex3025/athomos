@@ -35,7 +35,7 @@ class ErrorHandler(commands.Cog):
                 return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.text_channel_not_found', '{error} Text Channel `{text_channel}` not found!'), text_channel=text))
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await ctx.send(self.msg.get(ctx, 'errors.missing_argument', '{error} **Syntax error!** Use: `{prefix}%s %s`.') % (ctx.command.qualified_name, ctx.command.signature))
+            return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.missing_argument', '{error} **Syntax error!** Use: `{prefix}{name} {subcommands}`.'), name=ctx.command.qualified_name, subcommands=ctx.command.signature))
 
         elif isinstance(error, commands.MissingPermissions):
             missing_perms = [self.msg.get(ctx, f'permissions.{perm_name}', perm_name.title().replace('_', ' ')) for perm_name in error.missing_perms]
