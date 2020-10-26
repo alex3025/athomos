@@ -260,7 +260,7 @@
             "title": "Comandi di {name}"
         },
         "cog": {
-            "description_not_found": "Questo modulo non ha una descrizione.",
+            "description_not_found": "Questa estensione non ha una descrizione.",
             "title": "{cog_name} Commands"
         },
         "errors": {
