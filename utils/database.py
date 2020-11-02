@@ -17,6 +17,7 @@ class Database:
         self.session = Session()
         Base.metadata.create_all(bind=engine)
 
+
     class Guild(Base):
         __tablename__ = 'Guilds'
 
@@ -25,6 +26,7 @@ class Database:
 
         prefix = master.Column(master.String, default='!')
         language = master.Column(master.String, default='it_IT')
+
 
     class Admin(Base):
         __tablename__ = 'Admin'
@@ -40,6 +42,7 @@ class Database:
 
         welcome_roles = master.Column(master.String, default='')
 
+
     class Mod(Base):
         __tablename__ = 'Mod'
 
@@ -47,12 +50,14 @@ class Database:
 
         reports_channel = master.Column(master.Integer, default=None)
 
+
     class CustomCommands(Base):
         __tablename__ = 'Custom Commands'
 
         guild_id = master.Column(master.Integer, primary_key=True, autoincrement=False)
 
         customcommands = master.Column(master.String, default=r'{}')
+
 
     def get(self, filter_, table=Guild):
         return self.session.query(table).filter(filter_).first()

@@ -30,7 +30,7 @@ class Athomos(commands.Bot):
         self.help_links = lambda ctx: [
             (self.msg.get(ctx, 'help.links.invite', 'Invite'), discord.utils.oauth_url(self.user.id, permissions=discord.Permissions(8))),
             (self.msg.get(ctx, 'help.links.support', 'Support'), 'https://discord.gg/6YPEMyj'),
-            (self.msg.get(ctx, 'help.links.donate', 'Donate'), 'https://paypal.me/alex3025')
+            (self.msg.get(ctx, 'help.links.donate', 'Donate'), 'https://patreon.com/alex3025')
         ]
 
         self.load_modules()

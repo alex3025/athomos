@@ -15,7 +15,9 @@ class EmbedPaginator(menus.ListPageSource):
         self.embed.clear_fields()
         self.embed.set_footer(text=self.msg.format(self.msg.get(self.ctx, 'paginator.pages', 'Page {current_page}/{all_pages}'), current_page=menu.current_page + 1, all_pages=self.get_max_pages() if not self.get_max_pages() <= 0 else '1'))
         offset = menu.current_page * self.per_page
+
         for _, fields in enumerate(entries, start=offset):
             for name, value in fields.items():
                 self.embed.add_field(name=name, value=value[:64] + '...' if len(value) > 64 else value, inline=False)
+
         return self.embed

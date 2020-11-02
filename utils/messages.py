@@ -17,9 +17,17 @@ class Messages:
             def __missing__(key):
                 return '{%s}' % key
 
-        placeholders = {'JoinedAtDate': message.author.joined_at.strftime('%d/%m/%Y'), 'JoinedAtTime': message.author.joined_at.strftime('%H:%M'), 'Mention': message.author.mention, 'Username': message.author.name, 'ServerName': message.author.guild.name, 'ServerMembersCount': len(message.author.guild.members)}
+        placeholders = {
+            'JoinedAtDate': message.author.joined_at.strftime('%d/%m/%Y'),
+            'JoinedAtTime': message.author.joined_at.strftime('%H:%M'),
+            'Mention': message.author.mention,
+            'Username': message.author.name,
+            'ServerName': message.author.guild.name,
+            'ServerMembersCount': len(message.author.guild.members)
+        }
 
         return format_dict(placeholders)
+
 
     def parse(self, file):
         try:
@@ -33,6 +41,7 @@ class Messages:
             parsed = {}
         return parsed
 
+
     def format(self, string, **placeholders):
         class format_dict(dict):
             def __missing__(self, key):
@@ -40,8 +49,10 @@ class Messages:
 
         return string.format_map(format_dict(placeholders))
 
+
     def get_locale(self, guildID: int):
         return db.get(db.Guild.guild_id == guildID).language, guildID
+
 
     def get(self, locale_ctx, index, fallback=None):
         if isinstance(locale_ctx, commands.Context):
@@ -53,6 +64,7 @@ class Messages:
             data = self.parse(f'config/i18n/{locale}.json')
             for category in index.split('.'):
                 data = data[category]
+
         except (KeyError, FileNotFoundError):
             log.warning(f'Could not grab data from i18n key: {index}')
             data = fallback
