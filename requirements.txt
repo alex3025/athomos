@@ -4,3 +4,4 @@ dblpy
 colorlog
 sqlalchemy
 youtube_dl
+colorama

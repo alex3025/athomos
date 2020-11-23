@@ -9,7 +9,7 @@ from .config import Config
 config = Config()
 
 timestamp = time.strftime("%Y-%m-%d %H.%M.%S")
-formatter = colorlog.ColoredFormatter('%(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=None, reset=True, log_colors={
+formatter = colorlog.ColoredFormatter('%(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=timestamp, reset=True, log_colors={
     'DEBUG': 'purple',
     'INFO': 'green',
     'WARNING': 'yellow',
