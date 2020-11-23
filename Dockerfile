@@ -1,9 +1,10 @@
 FROM python:latest
 
-WORKDIR /home/alex3025/athomos
+WORKDIR .
 
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt update && apt -y install ffmpeg
+RUN pip install -r requirements.txt
 
 COPY . .
 

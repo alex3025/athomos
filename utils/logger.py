@@ -8,8 +8,7 @@ from .config import Config
 
 config = Config()
 
-timestamp = time.strftime("%Y-%m-%d %H.%M.%S")
-formatter = colorlog.ColoredFormatter('%(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=timestamp, reset=True, log_colors={
+formatter = colorlog.ColoredFormatter('[%(asctime)s] %(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=time.strftime("%d/%m/%Y %H:%M:%S"), reset=True, log_colors={
     'DEBUG': 'purple',
     'INFO': 'green',
     'WARNING': 'yellow',
@@ -21,23 +20,23 @@ log = logging.getLogger()
 log.setLevel(config.logging_level.upper())
 
 # Color Handler
+chandler = logging.StreamHandler()
+
 if config.colored_logging:
-    chandler = logging.StreamHandler()
     chandler.setFormatter(formatter)
-    log.addHandler(chandler)
 else:
-    chandler = logging.StreamHandler()
     chandler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
-    log.addHandler(chandler)
+
+log.addHandler(chandler)
 
 # File Handler
 if config.save_logs:
     if not os.path.isdir('logs'):
         log.info('Creating "logs" path.')
         os.makedirs('logs')
-    fhandler = logging.FileHandler(filename='logs/{}.log'.format(timestamp), encoding='utf-8', mode='w')
+    fhandler = logging.FileHandler(filename='logs/{}.log'.format(time.strftime("%d-%m-%Y %H.%M.%S")), encoding='utf-8', mode='w')
     fhandler.setLevel('DEBUG')
-    fhandler.setFormatter(logging.Formatter('[%(levelname)s] %(name)s: %(message)s'))
+    fhandler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s'))
     log.addHandler(fhandler)
 
 # Purge logs
