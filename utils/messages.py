@@ -28,7 +28,6 @@ class Messages:
 
         return format_dict(placeholders)
 
-
     def parse(self, file):
         try:
             with open(file, encoding='utf-8') as data:
@@ -41,7 +40,6 @@ class Messages:
             parsed = {}
         return parsed
 
-
     def format(self, string, **placeholders):
         class format_dict(dict):
             def __missing__(self, key):
@@ -49,10 +47,8 @@ class Messages:
 
         return string.format_map(format_dict(placeholders))
 
-
     def get_locale(self, guildID: int):
         return db.get(db.Guild.guild_id == guildID).language, guildID
-
 
     def get(self, locale_ctx, index, fallback=None):
         if isinstance(locale_ctx, commands.Context):

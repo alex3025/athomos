@@ -48,11 +48,7 @@ class Athomos(commands.Bot):
             return str(n // 1000) + 'k' if n >= 1000 else n
 
         # Status message
-        members = 0
-        for guild in self.guilds:
-            members += guild.member_count
-        stats = f'{round_(len(self.guilds))} {"Server" if len(self.guilds) == 1 else "Servers"} | {round_(members)} {"Utente" if members == 1 else "Utenti"}'
-
+        stats = f'{round_(len(self.guilds))} {"Server" if len(self.guilds) == 1 else "Servers"} | {round_(len(self.users))} {"Utente" if len(self.users) == 1 else "Utenti"}'
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=stats))
         self.log.debug('Presence updated.')
 

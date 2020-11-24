@@ -270,18 +270,19 @@ class Mod(commands.Cog):
         await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.ping', '{state} Currently pinging: **{ping}ms**'), state=ping_state, ping=ping))
 
     async def purge(self, ctx, limit, all_=True):
-        if limit > 2000:
-            return await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.clean.errors.too_many_messages', '{error} **Too many messages!** Try a lower number. ({limit}/2000)'), limit=limit))
+        async with ctx.channel.typing():
+            if limit > 2000:
+                return await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.clean.errors.too_many_messages', '{error} **Too many messages!** Try a lower number. ({limit}/2000)'), limit=limit))
 
-        def only_commands(message):
-            return message.author == self.bot.user
+            def only_commands(message):
+                return message.author == self.bot.user
 
-        deleted = await ctx.channel.purge(limit=limit, check=only_commands if not all_ else lambda m: True)
+            deleted = await ctx.channel.purge(limit=limit, check=only_commands if not all_ else lambda m: True)
 
-        try:
-            await ctx.message.delete()
-        except:
-            pass
+            try:
+                await ctx.message.delete()
+            except:
+                pass
 
         await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.clean.cleaned', '{success} Removed **{deleted}** messages.'), deleted=len(deleted)), delete_after=10)
 

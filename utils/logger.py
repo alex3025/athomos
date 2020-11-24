@@ -8,14 +8,6 @@ from .config import Config
 
 config = Config()
 
-formatter = colorlog.ColoredFormatter('[%(asctime)s] %(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=time.strftime("%d/%m/%Y %H:%M:%S"), reset=True, log_colors={
-    'DEBUG': 'purple',
-    'INFO': 'green',
-    'WARNING': 'yellow',
-    'ERROR': 'red',
-    'CRITICAL': 'white,bg_red'
-})
-
 log = logging.getLogger()
 log.setLevel(config.logging_level.upper())
 
@@ -23,7 +15,13 @@ log.setLevel(config.logging_level.upper())
 chandler = logging.StreamHandler()
 
 if config.colored_logging:
-    chandler.setFormatter(formatter)
+    chandler.setFormatter(colorlog.ColoredFormatter('(%(asctime)s) %(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=time.strftime("%d/%m/%Y-%H:%M:%S"), reset=True, log_colors={
+        'DEBUG': 'purple',
+        'INFO': 'green',
+        'WARNING': 'yellow',
+        'ERROR': 'red',
+        'CRITICAL': 'white,bg_red'
+    }))
 else:
     chandler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
 
@@ -34,9 +32,10 @@ if config.save_logs:
     if not os.path.isdir('logs'):
         log.info('Creating "logs" path.')
         os.makedirs('logs')
-    fhandler = logging.FileHandler(filename='logs/{}.log'.format(time.strftime("%d-%m-%Y %H.%M.%S")), encoding='utf-8', mode='w')
+
+    fhandler = logging.FileHandler(filename='logs/{}.log'.format(time.strftime("%d-%m-%Y_%H.%M.%S")), encoding='utf-8', mode='w')
     fhandler.setLevel('DEBUG')
-    fhandler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s'))
+    fhandler.setFormatter(logging.Formatter('(%(asctime)s) %(levelname)s: %(message)s', datefmt=time.strftime("%d/%m/%Y-%H:%M:%S")))
     log.addHandler(fhandler)
 
 # Purge logs

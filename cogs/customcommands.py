@@ -64,11 +64,12 @@ class CustomCommands(commands.Cog):
         """
         Show all custom commands for this server.
         """
-        fields = [{'**' + list(await self.bot.get_prefix(ctx.message))[-1] + name + '**': value.format_map(self.placeholders(ctx.message))} for name, value in json.loads(self.customcommands(ctx.guild).customcommands).items()]
+        if ctx.invoked_subcommand is None:
+            fields = [{'**' + list(await self.bot.get_prefix(ctx.message))[-1] + name + '**': value.format_map(self.placeholders(ctx.message))} for name, value in json.loads(self.customcommands(ctx.guild).customcommands).items()]
 
-        e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.title', 'Custom commands:'))
-        pages = menus.MenuPages(source=EmbedPaginator(embed=e, fields=fields, ctx=ctx, per_page=5), clear_reactions_after=True)
-        await pages.start(ctx)
+            e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.title', 'Custom commands:'))
+            pages = menus.MenuPages(source=EmbedPaginator(embed=e, fields=fields, ctx=ctx, per_page=5), clear_reactions_after=True)
+            await pages.start(ctx)
 
     @_customcommands.command(name='add', aliases=['create'])
     async def _customcommands_add(self, ctx, name, *, text):

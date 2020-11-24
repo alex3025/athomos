@@ -297,22 +297,22 @@ class Admin(commands.Cog):
         intersection = set(admin.welcome_roles.split(' ')).intersection(set([str(role.id) for role in roles]))
         if len(list(intersection)) > 0:
             if len(list(intersection)) > 1:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.add.errors.already_exist.multi', '{error} Roles {roles} are already welcome roles!'), roles=', '.join([ctx.message.guild.get_role(int(role)).mention for role in list(intersection)]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.errors.already_exist.multi', '{error} Roles {roles} are already welcome roles!'), roles=', '.join([ctx.message.guild.get_role(int(role)).mention for role in list(intersection)]))
             else:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.add.errors.already_exist.single', '{error} Role {role} is already a welcome role!'), role=', '.join([ctx.message.guild.get_role(int(role)).mention for role in list(intersection)]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.errors.already_exist.single', '{error} Role {role} is already a welcome role!'), role=', '.join([ctx.message.guild.get_role(int(role)).mention for role in list(intersection)]))
             await ctx.send(message)
         elif ctx.guild.default_role in roles:
-            await ctx.send(self.msg.get(ctx, 'admin.settings.joinroles.add.errors.cannot_add_everyone', '{error} You cannot add the `@everyone` role to welcome roles.'))
+            await ctx.send(self.msg.get(ctx, 'admin.settings.joinroles.errors.cannot_add_everyone', '{error} You cannot add the `@everyone` role to welcome roles.'))
         else:
             admin.welcome_roles = ' '.join(list(dict.fromkeys([str(role.id) for role in roles] + admin.welcome_roles.split(' ')))).rstrip()
             self.session.commit()
             if len([str(role.id) for role in roles]) > 1:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.add.added.multi', '{success} Roles {roles} added to welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.added.multi', '{success} Roles {roles} added to welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
             else:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.add.added.single', '{success} Role {role} added to welcome roles!'), role=', '.join([str(role.mention) for role in roles]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.added.single', '{success} Role {role} added to welcome roles!'), role=', '.join([str(role.mention) for role in roles]))
             await ctx.send(message)
 
-    @_joinroles.command(name='remove')
+    @_joinroles.command(name='remove', aliases=['rm'])
     async def _joinroles_remove(self, ctx, *roles: discord.Role):
         """
         Allows you to remove one or more roles from the list of joinroles.
@@ -325,17 +325,17 @@ class Admin(commands.Cog):
         intersection = set(admin.welcome_roles.split(' ')).intersection(set([str(role.id) for role in roles]))
         if not len(list(intersection)) > 0:
             if len(list(intersection)) > 1:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.remove.errors.not_exist.multi', '{error} Roles {roles} aren\'t welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.errors.not_exist.multi', '{error} Roles {roles} aren\'t welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
             else:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.remove.errors.not_exist.single', '{error} Role {role} isn\'t a welcome role!'), role=', '.join([str(role.mention) for role in roles]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.errors.not_exist.single', '{error} Role {role} isn\'t a welcome role!'), role=', '.join([str(role.mention) for role in roles]))
             await ctx.send(message)
         else:
             admin.welcome_roles = ' '.join([i for i in admin.welcome_roles.split(' ') if i not in list(dict.fromkeys([str(role.id) for role in roles]))]).rstrip()
             self.session.commit()
             if len([str(role.id) for role in roles]) > 1:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.remove.removed.multi', '{success} Roles {roles} removed from welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.removed.multi', '{success} Roles {roles} removed from welcome roles!'), roles=', '.join([str(role.mention) for role in roles]))
             else:
-                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.remove.removed.single', '{success} Role {role} removed from welcome roles!'), role=', '.join([str(role.mention) for role in roles]))
+                message = self.msg.format(self.msg.get(ctx, 'admin.settings.joinroles.removed.single', '{success} Role {role} removed from welcome roles!'), role=', '.join([str(role.mention) for role in roles]))
             await ctx.send(message)
 
 

@@ -442,9 +442,6 @@ class Music(commands.Cog):
         You can provide a url or title of the song.
         """
         if search:
-            if not ctx.voice_state.voice:
-                await ctx.invoke(self._summon)
-
             async with ctx.typing():
                 try:
                     source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
@@ -454,6 +451,9 @@ class Music(commands.Cog):
                 #     await ctx.send(msg.get(ctx, 'music.play.error', '{error} There was an error, please contact the bot owner.'))
                 else:
                     song = Song(source)
+
+                    if not ctx.voice_state.voice:
+                        await ctx.invoke(self._summon)
 
                     await ctx.voice_state.songs.put(song)
                     await ctx.send(embed=song.enqueued_embed(ctx))
