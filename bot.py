@@ -15,7 +15,7 @@ if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
-class Athomos(commands.Bot):
+class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.prefix, case_insensitive=True)
 
@@ -102,4 +102,4 @@ class Athomos(commands.Bot):
             self.log.exception('Cannot start the bot!')
 
 
-Athomos()
+Bot()
