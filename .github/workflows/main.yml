@@ -30,3 +30,12 @@ jobs:
         run: |
           cd /home/alex3025/athomos
           git pull
+      
+      - name: Update libraries
+        run: |
+          cd /home/alex3025/athomos
+          pip3 install --upgrade -r requirements.txt
+      
+      - name: Restart bot
+        run: 'sudo systemctl restart athomos'
+          
