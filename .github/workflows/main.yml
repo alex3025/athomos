@@ -36,6 +36,6 @@ jobs:
           cd /home/alex3025/athomos
           pip3 install --upgrade -r requirements.txt
       
-      - name: Restart bot
-        run: 'whoami'
+      - name: Restart the bot
+        run: 'sudo systemctl restart athomos'
           
