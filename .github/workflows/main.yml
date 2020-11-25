@@ -37,5 +37,5 @@ jobs:
           pip3 install --upgrade -r requirements.txt
       
       - name: Restart bot
-        run: 'sudo systemctl restart athomos'
+        run: 'whoami'
           
