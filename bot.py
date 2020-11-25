@@ -17,7 +17,11 @@ if sys.platform == 'win32':
 
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=self.prefix, case_insensitive=True)
+        # Set intents to get members amount
+        intents = discord.Intents.default()
+        intents.members = True
+
+        super().__init__(command_prefix=self.prefix, case_insensitive=True, intents=intents)
 
         self.config = Config()
         self.log = Logger()
