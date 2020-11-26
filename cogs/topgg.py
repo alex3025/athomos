@@ -17,8 +17,12 @@ class TopGG(commands.Cog):
             self.dblpy = dbl.DBLClient(self.bot, self.config.dbl_token)
             self.post_server_count.start()
 
+    def cog_unload(self):
+        self.post_server_count.cancel()
+
     @tasks.loop(minutes=15.0)
     async def post_server_count(self):
+        await self.bot.wait_until_ready()
         self.log.debug('Attempting to post server count on DBL...')
         try:
             await self.dblpy.post_guild_count()

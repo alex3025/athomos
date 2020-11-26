@@ -15,7 +15,7 @@ log.setLevel(config.logging_level.upper())
 chandler = logging.StreamHandler()
 
 if config.colored_logging:
-    chandler.setFormatter(colorlog.ColoredFormatter('(%(asctime)s) %(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=time.strftime("%d/%m/%Y-%H:%M:%S"), reset=True, log_colors={
+    chandler.setFormatter(colorlog.ColoredFormatter('%(log_color)s%(levelname)s%(reset)s: %(white)s%(message)s', datefmt=time.strftime("%d/%m/%Y-%H:%M:%S"), reset=True, log_colors={
         'DEBUG': 'purple',
         'INFO': 'green',
         'WARNING': 'yellow',
