@@ -1,15 +1,15 @@
+import asyncio
 import os
 import sys
-import asyncio
+from pathlib import Path
+
 import discord
-from discord.ext import commands
-from discord.ext import tasks
+from discord.ext import commands, tasks
 
 from utils.config import Config
+from utils.database import Database
 from utils.logger import Logger
 from utils.messages import Messages
-from utils.database import Database
-
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -28,7 +28,7 @@ class Bot(commands.Bot):
         self.msg = Messages()
         self.db = Database()
 
-        self.current_lang = lambda message: self.db.get(self.db.Guild.guild_id == message.guild.id).language
+        self.current_lang = lambda message: self.db.get(self.db.Guilds.guild_id == message.guild.id).language
 
         self.help_links = lambda ctx: [
             (self.msg.get(ctx, 'help.links.invite', 'Invite'), discord.utils.oauth_url(self.user.id, permissions=discord.Permissions(8))),
@@ -37,16 +37,16 @@ class Bot(commands.Bot):
         ]
 
         self.load_modules()
-        self.run_()
+        self.init()
 
     async def prefix(self, bot, message):
         if not message.guild:
             return
-        return commands.when_mentioned_or(self.db.get(self.db.Guild.guild_id == message.guild.id).prefix)(bot, message)
+        return commands.when_mentioned_or(self.db.get(self.db.Guilds.guild_id == message.guild.id).prefix)(bot, message)
 
-    @tasks.loop(minutes=5.0)
+    @tasks.loop(minutes=10.0)
     async def update_stats(self):
-        self.log.debug('Updating stats on Discord...')
+        self.log.debug('Updating bot\'s presence...')
 
         def round_(n):
             return str(n // 1000) + 'k' if n >= 1000 else n
@@ -67,6 +67,7 @@ class Bot(commands.Bot):
         self.log.info('Bot started and connected to Discord!')
         self.log.info(f'Logged with: {self.user.name} (ID: {self.user.id})\n')
         self.update_stats.start()
+        self.db.checkDatabase(self)
 
     async def on_resumed(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -75,26 +76,20 @@ class Bot(commands.Bot):
         self.log.info(f'Logged with: {self.user.name} (ID: {self.user.id})\n')
         self.update_stats.restart()
 
-    async def on_message(self, message):
-        if not message.guild:  # Disable DMs
-            return
-        elif message.author == self.user:  # Disable Auto-Reply
-            return
-        else:
-            await self.process_commands(message)
-
     def load_modules(self):
-        for cog in os.listdir('cogs'):
-            if cog.endswith('.py'):
-                ext = cog.replace('.py', '')
+        basePath = Path('cogs')
+        for file in basePath.rglob("*"):
+            directory = file.relative_to(basePath.parent)
+            if '__pycache__' not in file.parts and directory.is_file():
+                ext = directory.as_posix().replace('/', '.').replace('.py', '')
                 try:
-                    self.load_extension('cogs.' + ext)
-                    self.log.debug(f'Extension "{ext.title()}" loaded!')
-                except:
-                    self.log.exception(f'Cannot load "{ext.title()}" extension!')
+                    self.load_extension(ext)
+                    self.log.debug(f'Extension "{ext}" loaded!')
+                except commands.ExtensionError:
+                    self.log.exception(f'Cannot load "{ext}" extension!')
         self.log.info('Extensions loaded!')
 
-    def run_(self):
+    def init(self):
         try:
             if self.config.bot_token:
                 self.run(self.config.bot_token, reconnect=True)

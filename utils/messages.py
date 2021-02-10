@@ -48,7 +48,7 @@ class Messages:
         return string.format_map(format_dict(placeholders))
 
     def get_locale(self, guildID: int):
-        return db.get(db.Guild.guild_id == guildID).language, guildID
+        return db.get(db.Guilds.guild_id == guildID).language, guildID
 
     def get(self, locale_ctx, index, fallback=None):
         if isinstance(locale_ctx, commands.Context):
@@ -65,4 +65,4 @@ class Messages:
             log.warning(f'Could not grab data from i18n key: {index}')
             data = fallback
 
-        return self.format(data, success='<:athomos_success:600278477421281280>', error='<:athomos_error:600278499055370240>', prefix=db.get(db.Guild.guild_id == guild_id).prefix if guild_id else '!')
+        return self.format(data, success='<:athomos_success:600278477421281280>', error='<:athomos_error:600278499055370240>', prefix=db.get(db.Guilds.guild_id == guild_id).prefix if guild_id else '!')

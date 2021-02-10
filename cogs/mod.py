@@ -26,14 +26,9 @@ class Mod(commands.Cog):
         self.mod = lambda guild: self.db.get(self.db.Mod.guild_id == guild.id, self.db.Mod)
 
     @commands.Cog.listener()
-    async def on_guild_join(self, guild):
-        self.session.add(self.db.Mod(guild_id=guild.id))
-        self.session.commit()
-
-    @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         try:
-            self.session.delete(self.mod(guild))
+            
             self.session.commit()
         except sqlalchemy.orm.exc.UnmappedInstanceError:
             pass

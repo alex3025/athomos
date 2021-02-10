@@ -4,29 +4,33 @@ from colorama import Fore, Style
 
 class Config:
     def __init__(self, config_file='config/settings.ini'):
-        self.cfg = ConfigParser()
+        self.parser = ConfigParser()
 
-        self.cfg.read(config_file, encoding='utf-8')
+        self.parser.read(config_file, encoding='utf-8')
 
-        # General
-        self.bot_token = self.cfg.get('General', 'token', fallback=None)
+        # Bot
+        self.bot_token = self.parser.get('Bot', 'token', fallback=None)
 
         # Logging
-        self.logging_level = self.cfg.get('Logging', 'loggingLevel', fallback='Info')
-        self.save_logs = self.cfg.getboolean('Logging', 'saveLogs', fallback=True)
-        self.purge_logs = self.cfg.getboolean('Logging', 'purgeLogs', fallback=False)
-        self.show_settings = self.cfg.getboolean('Logging', 'showSettings', fallback=False)
-        self.colored_logging = self.cfg.getboolean('Logging', 'useColoredLogging', fallback=True)
-        self.print_traceback = self.cfg.getboolean('Logging', 'fullTraceback', fallback=False)
+        self.logging_level = self.parser.get('Logging', 'loggingLevel', fallback='Info')
+        self.save_logs = self.parser.getboolean('Logging', 'saveLogs', fallback=True)
+        self.purge_logs = self.parser.getboolean('Logging', 'purgeLogs', fallback=False)
+        self.show_settings = self.parser.getboolean('Logging', 'showSettings', fallback=False)
+        self.colored_logging = self.parser.getboolean('Logging', 'useColoredLogging', fallback=True)
+        self.print_traceback = self.parser.getboolean('Logging', 'fullTraceback', fallback=False)
 
         # Database
-        self.db_uri = self.cfg.get('Database', 'databaseURI', fallback='sqlite:///data.db')
+        self.db_uri = self.parser.get('Database', 'databaseURI', fallback='sqlite:///data.db')
 
-        # Other
-        self.embeds_color = int(self.cfg.get('Other', 'embedsColor', fallback='14B5EF'), 16)
-        self.dbl_token = self.cfg.get('Other', 'dblToken', fallback=None)
+        # Integrations
+        self.dbl_token = self.parser.get('Integrations', 'dblToken', fallback=None)
+        self.primebots_token = self.parser.get('Integrations', 'primeBotsToken', fallback=None)
 
-    def value_processor(self, key, value):
+        # Misc
+        self.embeds_color = int(self.parser.get('Misc', 'embedsColor', fallback='14B5EF'), 16)
+        
+
+    def short(self, value):
         if len(value) > 30:
             return value[:30] + '...'
         else:
@@ -38,7 +42,7 @@ class Config:
         else:
             colors = {'General': Style.RESET_ALL, 'Logging': Style.RESET_ALL}
 
-        for section in self.cfg.sections():
+        for section in self.parser.sections():
             print(f'\n[{colors[section] + section + Style.RESET_ALL}]')
-            for (key, value) in self.cfg.items(section):
-                print(' - {0}: {1}'.format(key, self.value_processor(key, value)))
+            for (key, value) in self.parser.items(section):
+                print(' - {0}: {1}'.format(key, self.short(value)))

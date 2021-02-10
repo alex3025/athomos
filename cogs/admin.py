@@ -35,20 +35,6 @@ class Admin(commands.Cog):
             raise commands.MissingPermissions(raised_perms)
         return True
 
-    # Events
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild):
-        self.session.add(self.db.Admin(guild_id=guild.id))
-        self.session.commit()
-
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
-        try:
-            self.session.delete(self.admin(guild))
-            self.session.commit()
-        except sqlalchemy.orm.exc.UnmappedInstanceError:
-            pass
-
     # Commands
     @commands.group(name='settings', aliases=['setting'])
     async def _settings(self, ctx):
@@ -64,7 +50,7 @@ class Admin(commands.Cog):
         Allows you to change the bot prefix.
         """
         max_length = 4
-        guild = self.db.get(self.db.Guild.guild_id == ctx.guild.id)
+        guild = self.db.get(self.db.Guilds.guild_id == ctx.guild.id)
         if '@' in prefix or '#' in prefix or '/' in prefix:
             await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.errors.bad_prefix', '{error} Prefix can\'t contain `#`, `@` or `/` characters.'))
         elif len(prefix) > max_length:
@@ -97,7 +83,7 @@ class Admin(commands.Cog):
             e.add_field(name=self.msg.get(ctx, 'admin.settings.language.available_languages', 'Available languages'), value=', '.join(avaiable_languages.values()), inline=True)
             await ctx.send(embed=e)
         else:
-            guild = self.db.get(self.db.Guild.guild_id == ctx.guild.id)
+            guild = self.db.get(self.db.Guilds.guild_id == ctx.guild.id)
             muted_role = discord.utils.get(ctx.guild.roles, name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'))
             old_lang = guild.language
             for lang_code, lang_name in avaiable_languages.items():
@@ -125,11 +111,11 @@ class Admin(commands.Cog):
             join_message = admin.join_message.format_map(self.msg.placeholders(ctx.message)) if admin.join_message else None
             leave_message = admin.leave_message.format_map(self.msg.placeholders(ctx.message)) if admin.leave_message else None
 
-            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.join_message.title.title', '**Join Message** (JM)'), value=(join_message[:64] + '...' if len(join_message) > 64 else join_message) if join_message else self.msg.get(ctx, 'admin.settings.messages.join_message.title.disabled', 'Join Message isn\'t set.'), inline=True)
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.join_message.title.title', '**Join Message** (JM)'), value=(join_message[:1024] + '...' if len(join_message) > 1024 else join_message) if join_message else self.msg.get(ctx, 'admin.settings.messages.join_message.title.disabled', 'Join Message isn\'t set.'), inline=True)
             e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.join_message.text_channel.title', '**JM** Text Channel'), value=f'<#{admin.join_message_textChannel}>' if admin.join_message_textChannel else self.msg.get(ctx, 'admin.settings.messages.join_message.text_channel.disabled', '{error} Not set'), inline=True)
             e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.join_message.send_in_dm', '**JM** Send in DM'), value=f"<:athomos_success:600278477421281280> {self.msg.get(ctx, 'miscellaneous.enabled', 'Enabled')}" if admin.join_message_sendInDM else f"<:athomos_error:600278499055370240> {self.msg.get(ctx, 'miscellaneous.disabled', 'Disabled')}", inline=True)
 
-            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.leave_message.title.title', '**Leave Message** (LM)'), value=(leave_message[:64] + '...' if len(leave_message) > 64 else leave_message) if leave_message else self.msg.get(ctx, 'admin.settings.messages.leave_message.title.disabled', 'Leave Message isn\'t set.'), inline=True)
+            e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.leave_message.title.title', '**Leave Message** (LM)'), value=(leave_message[:1024] + '...' if len(leave_message) > 1024 else leave_message) if leave_message else self.msg.get(ctx, 'admin.settings.messages.leave_message.title.disabled', 'Leave Message isn\'t set.'), inline=True)
             e.add_field(name=self.msg.get(ctx, 'admin.settings.messages.leave_message.text_channel.title', '**LM** Text Channel'), value=f'<#{admin.leave_message_textChannel}>' if admin.leave_message_textChannel else self.msg.get(ctx, 'admin.settings.messages.leave_message.text_channel.disabled', '{error} Not set'), inline=True)
             e.add_field(name='\u200b', value='\u200b', inline=True)  # Spacer
 

@@ -37,20 +37,6 @@ class CustomCommands(commands.Cog):
             raise commands.MissingPermissions(raised_perms)
         return True
 
-    # Events
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild):
-        self.session.add(self.db.CustomCommands(guild_id=guild.id))
-        self.session.commit()
-
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
-        try:
-            self.session.delete(self.db.get(self.db.CustomCommands.guild_id == guild.id, self.db.CustomCommands))
-            self.session.commit()
-        except sqlalchemy.orm.exc.UnmappedInstanceError:
-            pass
-
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.author.bot and message.guild:
