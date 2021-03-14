@@ -21,14 +21,14 @@ class Bot(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True
 
-        super().__init__(command_prefix=self.prefix, case_insensitive=True, intents=intents)
+        super().__init__(command_prefix=self.get_custom_prefix, case_insensitive=True, intents=intents)
 
         self.config = Config()
         self.log = Logger()
         self.msg = Messages()
-        self.db = Database()
+        self.db = Database().db
 
-        self.current_lang = lambda message: self.db.get(self.db.Guilds.guild_id == message.guild.id).language
+        # self.current_lang = lambda message: self.db.get(self.db.Guilds.guild_id == message.guild.id).language
 
         self.help_links = lambda ctx: [
             (self.msg.get(ctx, 'help.links.invite', 'Invite'), discord.utils.oauth_url(self.user.id, permissions=discord.Permissions(8))),
@@ -39,10 +39,10 @@ class Bot(commands.Bot):
         self.load_modules()
         self.init()
 
-    async def prefix(self, bot, message):
+    async def get_custom_prefix(self, bot, message):
         if not message.guild:
             return
-        return commands.when_mentioned_or(self.db.get(self.db.Guilds.guild_id == message.guild.id).prefix)(bot, message)
+        return commands.when_mentioned_or(self.db.find_one({'id': message.guild.id})['prefix'])(bot, message)
 
     @tasks.loop(minutes=10.0)
     async def update_stats(self):
@@ -67,7 +67,7 @@ class Bot(commands.Bot):
         self.log.info('Bot started and connected to Discord!')
         self.log.info(f'Logged with: {self.user.name} (ID: {self.user.id})\n')
         self.update_stats.start()
-        self.db.checkDatabase(self)
+        # self.db.checkDatabase(self)
 
     async def on_resumed(self):
         os.system('cls' if os.name == 'nt' else 'clear')

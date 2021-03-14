@@ -4,13 +4,10 @@ from discord.ext import commands
 from discord.ext.commands.core import Group
 
 from utils.config import Config
-from utils.database import Database
 from utils.messages import Messages
 
 
-db = Database()
 msg = Messages()
-cfg = Config()
 
 
 class EmbedPaginator(commands.Paginator):
@@ -21,7 +18,7 @@ class EmbedPaginator(commands.Paginator):
         self.clear()
 
     def clear(self):
-        self._current_page = discord.Embed(colour=cfg.embeds_color)
+        self._current_page = discord.Embed(colour=Config().embeds_color)
         self._count = 0
         self._pages = []
 
@@ -91,7 +88,7 @@ class BotHelp(commands.DefaultHelpCommand):
         signature = signature.replace('command', msg.get(self.context, 'miscellaneous.command', 'Command').lower())
 
         try:
-            for key, value in msg.parse('config/i18n/' + self.context.bot.current_lang(self.context.message) + '.json')['command_arguments'].items():
+            for key, value in msg.parse('config/i18n/' + msg.get_locale(self.context.guild.id)[0] + '.json')['command_arguments'].items():
                 if f'[{key}]' in signature:
                     signature = signature.replace(f'[{key}]', f'[{value}]')
                 elif f'[{key}...]' in signature:

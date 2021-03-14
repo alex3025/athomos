@@ -1,3 +1,4 @@
+import asyncio
 from discord.ext import commands
 
 from utils.logger import Logger
@@ -5,33 +6,72 @@ from utils.database import Database
 from utils.messages import Messages
 
 
+class GuildsDB(Database):
+    def on_guild_join(self, guild):
+        self.db.insert_one({
+            'id': guild.id,
+            'prefix': '!',
+            'language': 'it_IT',
+            'messages': {
+                'join': {
+                    'message': None,
+                    'textChannel': None,
+                    'sendInDm': False
+                },
+                'leave': {
+                    'message': None,
+                    'textChannel': None
+                }
+            },
+            'welcomeRoles': [],
+            'reportsChannel': None,
+            'customCommands': {}
+        })
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
         self.log = Logger()
-        self.db = Database()
         self.msg = Messages()
-        self.session = self.db.session
+        self.guilds = GuildsDB()
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        # if not message.guild and await self.bot.is_owner(message.author):
+        #     await message.add_reaction('📣')
+        # else:
+        #     return
         if not message.guild:
             return
-        elif message.author == self.bot.user:
+
+        if message.author == self.bot.user:
             return
 
         if message.author.bot:
             return
+    
+    # @commands.Cog.listener()
+    # async def on_reaction_add(self, reaction, user):
+    #     if str(reaction) == '📣' and await self.bot.is_owner(user):
+    #         await reaction.message.add_reaction('📨')
+    #         try:
+    #             reaction, user = await self.bot.wait_for('reaction_add', timeout=15, check=lambda reaction, user: user == reaction.message.author and str(reaction) == '📨')
+    #         except asyncio.TimeoutError:
+    #             print('sas')
+    #         else:
+    #             await reaction.message.channel.send('EPICO!')
+    #         finally:
+    #             await reaction.message.remove_reaction('📨', self.bot.user)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        self.db.createTables(guild)
+        self.guilds.on_guild_join(guild)
         self.log.debug(f'Joined in a guild: {guild.name} (ID: {guild.id})')
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        self.db.deleteTables(guild)
+        self.guilds.on_guild_leave(guild)
         self.log.debug(f'Removed from a guild: {guild.name} (ID: {guild.id})')
 
     @commands.Cog.listener()
