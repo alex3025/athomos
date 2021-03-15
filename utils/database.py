@@ -1,15 +1,49 @@
 from pymongo import MongoClient
+
 from utils.config import Config
+from utils.logger import Logger
 
 
+log = Logger()
 cluster = MongoClient(Config().db_uri)
+
 
 class Database:
     def __init__(self):
-        self.db = cluster['athomos']['guilds']
+        self.db = cluster[Config().db_name][Config().db_collection_name]
+
 
     def on_guild_join(self, guild):
-        pass
+        self.db.insert_one({
+            'id': guild.id,
+            'prefix': '!',
+            'language': 'it_IT',
+            'messages': {
+                'join': {
+                    'message': None,
+                    'textChannel': None,
+                    'sendInDm': False
+                },
+                'leave': {
+                    'message': None,
+                    'textChannel': None
+                }
+            },
+            'welcomeRoles': [],
+            'reportsChannel': None,
+            'customCommands': []
+        })
 
-    def on_guild_leave(self, guild):
-        pass
+
+    def add_missing_guilds(self, bot):
+        addedMissingGuilds = False
+
+        for guild in bot.guilds:  # Add missing guilds
+            if self.db.find_one({'id': guild.id}) is None:  # Not Found
+                self.on_guild_join(guild)
+                addedMissingGuilds = True
+
+        if addedMissingGuilds:
+            log.info('Missing guild(s) added to the database.')
+        
+        log.debug('Fixed database guilds references.')

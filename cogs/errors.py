@@ -3,7 +3,6 @@ import traceback
 from discord.ext import commands
 
 from utils.logger import Logger
-from utils.database import Database
 from utils.messages import Messages
 
 
@@ -12,9 +11,7 @@ class ErrorHandler(commands.Cog):
         self.bot = bot
 
         self.msg = Messages()
-        self.db = Database()
         self.log = Logger()
-        self.session = self.db.session
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

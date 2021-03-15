@@ -9,7 +9,6 @@ from discord.ext import commands
 from async_timeout import timeout
 
 from utils.config import Config
-from utils.database import Database
 from utils.messages import Messages
 from utils.paginator import EmbedPaginator
 
@@ -18,7 +17,6 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 msg = Messages()
 config = Config()
-db = Database()
 
 
 class VoiceError(Exception):

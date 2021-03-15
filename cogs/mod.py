@@ -19,19 +19,9 @@ class Mod(commands.Cog):
 
         self.config = Config()
         self.msg = Messages()
-        self.db = Database()
+        self.db = Database().db
         self.log = Logger()
-        self.session = self.db.session
 
-        self.mod = lambda guild: self.db.get(self.db.Mod.guild_id == guild.id, self.db.Mod)
-
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
-        try:
-            
-            self.session.commit()
-        except sqlalchemy.orm.exc.UnmappedInstanceError:
-            pass
 
     @commands.command(name='ban')
     @commands.has_permissions(ban_members=True)
@@ -58,6 +48,7 @@ class Mod(commands.Cog):
             else:
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.ban.guild.no_reason', '{success} Banned {banned} from this server.'), banned=member.mention))
 
+
     @commands.command(name='unban')
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
@@ -76,6 +67,7 @@ class Mod(commands.Cog):
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.unban.guild.no_reason', '{success} Unbanned {unbanned} from this server.'), unbanned=ban_entry.user.mention))
         else:
             await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.unban.errors.user_not_found', '{error} Banned user `{user}` not found.'), user=user))
+
 
     @commands.command(name='kick')
     @commands.has_permissions(kick_members=True)
@@ -101,6 +93,7 @@ class Mod(commands.Cog):
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.kick.guild.reason', '{success} Kicked {kicked} from this server.\nReason: `{reason}`'), kicked=member.mention, reason=reason))
             else:
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.kick.guild.no_reason', '{success} Kicked {kicked} from this server.'), kicked=member.mention))
+
 
     @commands.command(name='mute')
     @commands.has_permissions(manage_roles=True)
@@ -135,6 +128,7 @@ class Mod(commands.Cog):
             else:
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.mute.guild.no_reason', '{success} {muted} was muted by {author}.'), muted=member.mention, author=ctx.author.mention))
 
+
     @commands.command(name='unmute')
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
@@ -154,6 +148,7 @@ class Mod(commands.Cog):
         else:
             await ctx.send(self.msg.get(ctx, 'mod.mute.errors.not_muted', '{error} This user isn\'t muted!'))
 
+
     @commands.command(name='nickname', aliases=['nick'])
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(manage_nicknames=True)
@@ -170,6 +165,7 @@ class Mod(commands.Cog):
             await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.nickname.changed', '{success} You changed the nickname of **{user}** to `{nickname}`.'), user=member.name, nickname=nickname))
         else:
             await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.nickname.removed', '{success} You removed the nickname of **{user}**.'), user=member.name))
+
 
     @commands.command(name='announce', aliases=['broadcast', 'bc'])
     @commands.has_permissions(mention_everyone=True)
@@ -189,6 +185,7 @@ class Mod(commands.Cog):
                 except:
                     pass
 
+
     @commands.group(name='report', invoke_without_command=True)
     async def _report(self, ctx, member: discord.Member, *, reason):
         """
@@ -196,16 +193,19 @@ class Mod(commands.Cog):
 
         If you have the necessary permissions, you can set the channel where the reports will be sent.
         """
-        channel = self.mod(ctx.guild).reports_channel
+        channel = self.db.find_one({'id': ctx.guild.id})['reportsChannel']
         if channel:
-            e = discord.Embed(colour=int('f44336', 16), title=self.msg.get(ctx, 'mod.report.title', 'Report'), timestamp=datetime.utcnow())
-            e.add_field(name=self.msg.get(ctx, 'mod.report.reported', 'User reported:'), value=member.mention, inline=False)
+            e = discord.Embed(colour=int('f44336', 16), title=self.msg.get(ctx, 'mod.report.title', ':warning: Report'), timestamp=datetime.utcnow())
+            e.add_field(name=self.msg.get(ctx, 'mod.report.reported', 'User reported:'), value=member.mention, inline=True)
+            e.add_field(name=self.msg.get(ctx, 'mod.report.channel', 'Channel:'), value=ctx.channel.mention, inline=True)
             e.add_field(name=self.msg.get(ctx, 'mod.report.reason', 'Reason:'), value=reason, inline=False)
             e.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
             try:
                 await self.bot.get_channel(channel).send(embed=e)
             except discord.HTTPException:
                 return await ctx.send(self.msg.get(ctx, 'mod.report.errors.reason_too_long', '{error} **Reasong too long!** Maximum 1024 characters allowed.'))
+
             await ctx.send(self.msg.get(ctx, 'mod.report.report_sent', '{success} **Report sent!** An administrator has been notified.'))
         else:
             if ctx.author.guild_permissions.manage_guild:
@@ -213,40 +213,41 @@ class Mod(commands.Cog):
             else:
                 await ctx.send(self.msg.get(ctx, 'mod.report.errors.channel_not_set.simple', '{error} **Reports channel not set!** Contact an administrator to configure it.'))
 
+
     @_report.command(name='set')
     @commands.has_permissions(manage_guild=True)
     async def _report_set(self, ctx, channel: discord.TextChannel=None):
         """
         Allows you to set the channel where the reports will be sent.
         """
-        mod = self.mod(ctx.guild)
-        already_set = mod.reports_channel
+        reportsChannel = self.db.find_one({'id': ctx.guild.id})['reportsChannel']
 
         if channel:
-            mod.reports_channel = channel.id
+            channel = channel.id
         else:
-            mod.reports_channel = ctx.channel.id
-        self.session.commit()
+            channel = ctx.channel.id
+        self.db.update_one({'id': ctx.guild.id}, {'$set': {'reportsChannel': channel}})
 
-        channel = self.bot.get_channel(mod.reports_channel).mention
-        if already_set:
-            await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.report.set.changed', '{success} **Reports channel changed!** Now all reports will be sent to {channel}.'), channel=channel))
+        channel = self.bot.get_channel(channel).mention
+        if reportsChannel:
+            await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.report.set.changed', '{success} **Reports channel changed!** All new reports will be sent to {channel}.'), channel=channel))
         else:
-            await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.report.set.new', '{success} **Reports channel configured!** Now all reports will be sent to {channel}.'), channel=channel))
+            await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.report.set.new', '{success} **Reports channel configured!** All new reports will be sent to {channel}.'), channel=channel))
 
-    @_report.command(name='disable')
+
+    @_report.command(name='disable', aliases=['unset'])
     @commands.has_permissions(manage_guild=True)
     async def _report_disable(self, ctx):
         """
         Allows you to disable the channel dedicated to reports.
         """
-        mod = self.mod(ctx.guild)
-        if mod.reports_channel:
-            mod.reports_channel = None
-            self.session.commit()
+        reportsChannel = self.db.find_one({'id': ctx.guild.id})['reportsChannel']
+        if reportsChannel:
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'reportsChannel': None}})
             await ctx.send(self.msg.get(ctx, 'mod.report.remove.disabled', '{success} Reports channel disabled.'))
         else:
             await ctx.send(self.msg.get(ctx, 'mod.report.errors.channel_not_set.full', '{error} **Reports channel not set!** You can set it with: `{prefix}report set <channel>`.'))
+
 
     @commands.command(name='ping', aliases=['latency'])
     async def _ping(self, ctx):
@@ -263,6 +264,7 @@ class Mod(commands.Cog):
             ping_state = '🟢'
 
         await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.ping', '{state} Currently pinging: **{ping}ms**'), state=ping_state, ping=ping))
+
 
     async def purge(self, ctx, limit, all_=True):
         async with ctx.channel.typing():
@@ -304,6 +306,7 @@ class Mod(commands.Cog):
         """
         await self.purge(ctx, limit, False)
 
+
     # # # # # # # # # #
     # ERROR HANDLERS  #
     # # # # # # # # # #
@@ -313,20 +316,24 @@ class Mod(commands.Cog):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(self.msg.get(ctx, 'mod.ban.errors.missing_permissions', '{error} You don\'t have the permissions to ban this member.'))
 
+
     @_kick.error
     async def _kick_errors(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(self.msg.get(ctx, 'mod.kick.errors.missing_permissions', '{error} You don\'t have the permissions to kick this member.'))
+
 
     @_mute.error
     async def _mute_errors(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(self.msg.get(ctx, 'mod.mute.errors.missing_permissions', '{error} You don\'t have the permissions to mute this member.'))
 
+
     @_unmute.error
     async def _unmute_errors(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(self.msg.get(ctx, 'mod.unmute.errors.missing_permissions', '{error} You don\'t have the permissions to unmute this member.'))
+
 
     @_nickname.error
     async def _nickname_errors(self, ctx, error):

@@ -12,7 +12,7 @@ class TopGG(commands.Cog):
         self.config = Config()
         self.log = Logger()
 
-        if not self.config.dbl_token:
+        if not self.config.topGG_token:
             try:
                 self.bot.unload_extension('cogs.integrations.topgg')
                 self.log.info('TopGG token not set! Disabling extension.')
@@ -21,7 +21,7 @@ class TopGG(commands.Cog):
             finally:    
                 return
 
-        self.dblpy = dbl.DBLClient(self.bot, self.config.dbl_token)
+        self.dblpy = dbl.DBLClient(self.bot, self.config.topGG_token)
 
 
     # Methods

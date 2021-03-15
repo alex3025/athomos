@@ -1,6 +1,6 @@
-import asyncio
 import os
 import sys
+import asyncio
 from pathlib import Path
 
 import discord
@@ -17,7 +17,7 @@ if sys.platform == 'win32':
 
 class Bot(commands.Bot):
     def __init__(self):
-        # Set intents to get members amount
+        # Intents for members events and count
         intents = discord.Intents.default()
         intents.members = True
 
@@ -26,9 +26,7 @@ class Bot(commands.Bot):
         self.config = Config()
         self.log = Logger()
         self.msg = Messages()
-        self.db = Database().db
-
-        # self.current_lang = lambda message: self.db.get(self.db.Guilds.guild_id == message.guild.id).language
+        self.db = Database()
 
         self.help_links = lambda ctx: [
             (self.msg.get(ctx, 'help.links.invite', 'Invite'), discord.utils.oauth_url(self.user.id, permissions=discord.Permissions(8))),
@@ -39,10 +37,12 @@ class Bot(commands.Bot):
         self.load_modules()
         self.init()
 
+
     async def get_custom_prefix(self, bot, message):
         if not message.guild:
             return
-        return commands.when_mentioned_or(self.db.find_one({'id': message.guild.id})['prefix'])(bot, message)
+        return commands.when_mentioned_or(self.db.db.find_one({'id': message.guild.id})['prefix'])(bot, message)
+
 
     @tasks.loop(minutes=10.0)
     async def update_stats(self):
@@ -56,6 +56,7 @@ class Bot(commands.Bot):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=stats))
         self.log.debug('Presence updated.')
 
+
     async def on_ready(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         print(open('logo.txt', 'r').read() + '\n')
@@ -67,7 +68,8 @@ class Bot(commands.Bot):
         self.log.info('Bot started and connected to Discord!')
         self.log.info(f'Logged with: {self.user.name} (ID: {self.user.id})\n')
         self.update_stats.start()
-        # self.db.checkDatabase(self)
+        self.db.add_missing_guilds(self)
+
 
     async def on_resumed(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -75,6 +77,7 @@ class Bot(commands.Bot):
         self.log.info('Bot resumed and connected to discord!')
         self.log.info(f'Logged with: {self.user.name} (ID: {self.user.id})\n')
         self.update_stats.restart()
+
 
     def load_modules(self):
         basePath = Path('cogs')
@@ -87,7 +90,9 @@ class Bot(commands.Bot):
                     self.log.debug(f'Extension "{ext}" loaded!')
                 except commands.ExtensionError:
                     self.log.exception(f'Cannot load "{ext}" extension!')
+
         self.log.info('Extensions loaded!')
+
 
     def init(self):
         try:
@@ -96,7 +101,7 @@ class Bot(commands.Bot):
             else:
                 self.log.critical('Missing token, check the config file! Cannot start the bot.')
         except discord.errors.LoginFailure:
-            self.log.critical('Unknow token, check the config file! Cannot start the bot.')
+            self.log.critical('Invalid token, check the config file! Cannot start the bot.')
         except:
             self.log.exception('Cannot start the bot!')
 

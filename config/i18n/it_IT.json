@@ -23,7 +23,8 @@
                     "multi": "{success} I ruoli {roles} sono stati rimossi dai ruoli di benvenuto!",
                     "single": "{success} Il ruolo {role} è stato rimosso dai ruoli di benvenuto!"
                 },
-                "title": "Ruoli di benvenuto"
+                "title": "Ruoli di benvenuto",
+                "footer": "Questi ruoli verranno applicati quando un nuovo utente entra nel server."
             },
             "language": {
                 "available_languages": "Lingue disponibili",
@@ -243,7 +244,8 @@
             },
             "removed": "{success} Il comando personalizzato `{prefix}{name}` è stato rimosso con successo."
         },
-        "title": "Comandi personalizzati:"
+        "title": "Comandi personalizzati:",
+        "none": "{error} Questo server non ha nessun comando personalizzato."
     },
     "errors": {
         "bot_missing_permissions": "{error} **Permessi del bot mancanti!** Per esesguire questo comando ho bisogno di questi permessi: `{permissions}`.",
@@ -286,6 +288,11 @@
             "invite": "Invita",
             "support": "Supporto",
             "title": "Links :pushpin:"
+        },
+        "intro": {
+            "title": "Heilà! :wave:",
+            "description": "Io sono Athomos, un bot multifunzione pensato per essere facile da usare ed user-friendly.",
+            "footer": "Per iniziare ad utilizzarmi, digita {prefix}help e guarda tutti i comandi disponibili."
         }
     },
     "miscellaneous": {
@@ -383,10 +390,11 @@
             "reported": "Utente segnalato:",
             "report_sent": "{success} **Segnalazione inviata!** Un amministratore è stato avvertito.",
             "set": {
-                "changed": "{success} **Canale delle segnalazioni cambiato!** Ora tutte le segnalazioni verranno mandate su {channel}.",
-                "new": "{success} **Canale delle segnalazioni configurato!** Ora tutte le segnalazioni verranno mandate su {channel}."
+                "changed": "{success} **Canale delle segnalazioni cambiato!** Tutte le nuove segnalazioni verranno mandate su {channel}.",
+                "new": "{success} **Canale delle segnalazioni configurato!** Tutte le nuove segnalazioni verranno mandate su {channel}."
             },
-            "title": "Segnalazione"
+            "title": ":warning: Segnalazione",
+            "channel": "Canale:"
         },
         "unban": {
             "audit": {

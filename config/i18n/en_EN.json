@@ -23,7 +23,8 @@
                     "multi": "{success} Roles {roles} removed from welcome roles!",
                     "single": "{success} Role {role} removed from welcome roles!"
                 },
-                "title": "Welcome Roles"
+                "title": "Welcome Roles",
+                "footer": "These roles will be added when a new user joins the server."
             },
             "language": {
                 "available_languages": "Available languages",
@@ -243,7 +244,8 @@
             },
             "removed": "{success} Custom command `{prefix}{name}` removed."
         },
-        "title": "Custom commands:"
+        "title": "Custom commands:",
+        "none": "{error} This server doesn't have any custom commands."
     },
     "errors": {
         "bot_missing_permissions": "{error} **Missing bot permissions!** To run this command I need these permissions: `{permissions}`.",
@@ -286,9 +288,13 @@
             "invite": "Invite",
             "support": "Support",
             "title": "Links :pushpin:"
+        },
+        "intro": {
+            "title": "Hello there! :wave:",
+            "description": "I'm Athomos, a multi-purpose bot designed to be easy-to-use and user friendly.",
+            "footer": "To start using me, do {prefix}help and see all the available commands."
         }
     },
-    "language_name": ":flag_gb: English",
     "miscellaneous": {
         "command": "Command",
         "disabled": "Disabled",
@@ -383,10 +389,11 @@
             },
             "reported": "User reported:",
             "set": {
-                "changed": "{success} **Reports channel changed!** Now all reports will be sent to {channel}.",
-                "new": "{success} **Reports channel configured!** Now all reports will be sent to {channel}."
+                "changed": "{success} **Reports channel changed!** All reports will be sent to {channel}.",
+                "new": "{success} **Reports channel configured!** All reports will be sent to {channel}."
             },
-            "title": "Report"
+            "title": ":warning: Report",
+            "channel": "Channel:"
         },
         "unban": {
             "audit": {

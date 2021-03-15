@@ -21,9 +21,11 @@ class Config:
 
         # MongoDB
         self.db_uri = self.parser.get('MongoDB', 'databaseURI')
+        self.db_name = self.parser.get('MongoDB', 'databaseName')
+        self.db_collection_name = self.parser.get('MongoDB', 'collectionName')
 
         # Integrations
-        self.dbl_token = self.parser.get('Integrations', 'dblToken', fallback=None)
+        self.topGG_token = self.parser.get('Integrations', 'topGGToken', fallback=None)
         self.primebots_token = self.parser.get('Integrations', 'primeBotsToken', fallback=None)
 
         # Misc

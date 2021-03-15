@@ -1,32 +1,9 @@
-import asyncio
+import discord
 from discord.ext import commands
 
 from utils.logger import Logger
 from utils.database import Database
 from utils.messages import Messages
-
-
-class GuildsDB(Database):
-    def on_guild_join(self, guild):
-        self.db.insert_one({
-            'id': guild.id,
-            'prefix': '!',
-            'language': 'it_IT',
-            'messages': {
-                'join': {
-                    'message': None,
-                    'textChannel': None,
-                    'sendInDm': False
-                },
-                'leave': {
-                    'message': None,
-                    'textChannel': None
-                }
-            },
-            'welcomeRoles': [],
-            'reportsChannel': None,
-            'customCommands': {}
-        })
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -34,7 +11,8 @@ class Events(commands.Cog):
 
         self.log = Logger()
         self.msg = Messages()
-        self.guilds = GuildsDB()
+        self.db = Database()
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -66,46 +44,49 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        self.guilds.on_guild_join(guild)
+        self.db.on_guild_join(guild)
         self.log.debug(f'Joined in a guild: {guild.name} (ID: {guild.id})')
 
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
-        self.guilds.on_guild_leave(guild)
-        self.log.debug(f'Removed from a guild: {guild.name} (ID: {guild.id})')
+
+    # @commands.Cog.listener()
+    # async def on_guild_remove(self, guild):
+    #     self.log.debug(f'Removed from a guild: {guild.name} (ID: {guild.id})')
+
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        admin = self.db.get(self.db.Admin.guild_id == member.guild.id, self.db.Admin)
-
-        # Welcome Message
-        if admin.join_message and not member.bot:
+        # Join Message
+        joinMessage = self.db.db.find_one({'id': member.guild.id})['messages']['join']
+        if joinMessage['message'] and not member.bot:
             try:
-                if admin.join_message_sendInDM:
-                    await member.send(admin.join_message.format_map(self.msg.placeholders(member)))
+                if joinMessage['sendInDm']:
+                    await member.send(joinMessage['message'].format_map(self.msg.placeholders(member)))
                 else:
-                    channel = member.guild.get_channel(admin.join_message_textChannel)
-                    await channel.send(admin.join_message.format_map(self.msg.placeholders(member)))
-            except KeyError:
+                    channel = member.guild.get_channel(joinMessage['textChannel'])
+                    await channel.send(joinMessage['message'].format_map(self.msg.placeholders(member)))
+            except (KeyError, discord.NotFound) as ex:
+                if isinstance(ex, discord.NotFound):
+                    self.db.db.update_one({'id': member.guild.id}, {'$set': {'messages': {'join': {'textChannel': None}}}})
                 pass
 
         # Welcome roles
-        if len(admin.welcome_roles) > 0:
-            for role in [member.guild.get_role(int(role)) for role in admin.welcome_roles.split(' ')]:
+        welcomeRoles = self.db.db.find_one({'id': member.guild.id})['welcomeRoles']
+        if len(welcomeRoles) > 0:
+            for role in [member.guild.get_role(role) for role in welcomeRoles]:
                 try:
                     await member.add_roles(role)
                 except:
                     pass
 
+
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        admin = self.db.get(self.db.Admin.guild_id == member.guild.id, self.db.Admin)
-
         # Leave Message
-        if admin.leave_message and not member.bot:
+        leaveMessage = self.db.db.find_one({'id': member.guild.id})['messages']['leave']
+        if leaveMessage['message'] and not member.bot:
             try:
-                channel = member.guild.get_channel(admin.join_message_textChannel)
-                await channel.send(admin.leave_message.format_map(self.msg.placeholders(member)))
+                channel = member.guild.get_channel(leaveMessage['textChannel'])
+                await channel.send(leaveMessage['message'].format_map(self.msg.placeholders(member)))
             except KeyError:
                 pass
 

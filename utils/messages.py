@@ -22,7 +22,6 @@ class Messages:
             'JoinedAtTime': message.author.joined_at.strftime('%H:%M'),
             'Mention': message.author.mention,
             'Username': message.author.name,
-            'ServerName': message.author.guild.name,
             'ServerMembersCount': len(message.author.guild.members)
         }
 

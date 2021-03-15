@@ -155,4 +155,3 @@ ffmpeg.exe
 start.bat
 config/settings.ini
 cogs/api.py
-utils/database_old.py
