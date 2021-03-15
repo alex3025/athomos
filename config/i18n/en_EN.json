@@ -1,5 +1,5 @@
 {
-    "language_name": ":flag_en: English",
+    "language_name": ":flag_gb: English",
     "admin": {
         "settings": {
             "joinroles": {
@@ -44,7 +44,8 @@
                     "title": {
                         "created": "{success} **Welcome message set!**",
                         "updated": "{success} **Welcome message updated!**"
-                    }
+                    },
+                    "text_channel_updated": "{success} **Text channel updated!** If `sendInDm` is false, all the new join messages will be sent in that channel."
                 },
                 "join_message": {
                     "send_in_dm": "**JM** Send in DM",
@@ -65,7 +66,8 @@
                     "title": {
                         "created": "{success} **Leave message set!**",
                         "updated": "{success} **Leave message updated!**"
-                    }
+                    },
+                    "text_channel_updated": "{success} **Text channel updated!** All the new leave messages will be sent in that channel."
                 },
                 "leave_message": {
                     "text_channel": {
@@ -255,7 +257,8 @@
         "missing_permissions": "{error} **Missing permissions!** To run this command you need these permissions: `{permissions}`.",
         "owner_only": "{error} This command can be **executed only** by the bot owner!",
         "role_not_found": "{error} Role `{role}` not found!",
-        "text_channel_not_found": "{error} Text Channel `{text_channel}` not found!"
+        "text_channel_not_found": "{error} Text Channel `{text_channel}` not found!",
+        "bad_arguments": "{error} **Bad argument(s)!** Check the command."
     },
     "help": {
         "bot": {
@@ -428,7 +431,8 @@
             "bot_already_connect": "{error} I'm already connected to a voice channel!",
             "not_found": "{error} No results found for: `{search}`.",
             "not_playing": "{error} I'm not playing anything.",
-            "user_not_connected": "{error} You aren't connected to a voice channel!"
+            "user_not_connected": "{error} You aren't connected to a voice channel!",
+            "same_channel": "{error} I'm already connected to that channel!"
         },
         "now_playing": "**Now playing:** `{title}` requested by {requester}.",
         "play": {

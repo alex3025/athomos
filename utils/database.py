@@ -31,7 +31,7 @@ class Database:
             },
             'welcomeRoles': [],
             'reportsChannel': None,
-            'customCommands': []
+            'customCommands': {}
         })
 
 

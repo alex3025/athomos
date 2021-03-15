@@ -66,7 +66,7 @@ class Events(commands.Cog):
                     await channel.send(joinMessage['message'].format_map(self.msg.placeholders(member)))
             except (KeyError, discord.NotFound) as ex:
                 if isinstance(ex, discord.NotFound):
-                    self.db.db.update_one({'id': member.guild.id}, {'$set': {'messages': {'join': {'textChannel': None}}}})
+                    self.db.db.update_one({'id': member.guild.id}, {'$set': {'messages.join.textChannel': None}})
                 pass
 
         # Welcome roles

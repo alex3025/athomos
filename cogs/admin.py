@@ -89,7 +89,14 @@ class Admin(commands.Cog):
                 if language.lower() == ''.join(lang_lower).lower():
                     new_lang_name = lang_name
                     self.db.update_one({'id': ctx.guild.id}, {'$set': {'language': lang_code}})
-            if guild_db['language'] == old_lang:
+
+            try:
+                muted_role = discord.utils.get(ctx.guild.roles, name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'))
+                await muted_role.edit(name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'))
+            except (AttributeError, discord.NotFound):
+                pass
+
+            if self.db.find_one({'id': ctx.guild.id})['language'] == old_lang:
                 await ctx.send(self.msg.get(ctx, 'admin.settings.language.errors.not_exist', '{error} **That language isn\'t avaiable!** See all the languages avaiable with: `{prefix}setting language`'))
             else:
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'admin.settings.language.updated', '{success} **Language updated!** Now the bot\'s language for this server is: **{language}**'), language=new_lang_name))
@@ -146,9 +153,9 @@ class Admin(commands.Cog):
 
             already_exist = joinMessage['message']
 
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'join': {'message': welcome_message}}}})
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.join.message': welcome_message}})
             if joinMessage['textChannel'] is None:
-                self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'join': {'textChannel': ctx.channel.id}}}})
+                self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.join.textChannel': ctx.channel.id}})
 
             if already_exist:
                 await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.title.updated', '{success} **Welcome message updated!**'))
@@ -157,15 +164,15 @@ class Admin(commands.Cog):
 
             await ctx.command.parent(ctx)
 
-    @_messages_join.command(name='channel')
+    @_messages_join.command(name='channel', aliases=['textchannel'])
     async def _messages_join_textChannel(self, ctx, text_channel: discord.TextChannel=None):
         """
         Allows you to set or modify the text channel where the join messages will be sent.
         """
         joinMessage = self.db.find_one({'id': ctx.guild.id})['messages']['join']
-
         if joinMessage['message']:
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'join': {'textChannel': ctx.channel.id if text_channel is None else text_channel.id}}}})
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.join.textChannel': ctx.channel.id if text_channel is None else text_channel.id}})
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.text_channel_updated', '{success} **Text channel updated!** If `sendInDm` is false, all the new join messages will be sent in that channel.'))
         else:
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.errors.disabled', '{error} **Welcome message isn\'t configured!** You can set it with: `{prefix}settings messages join [welcome message]`'))
 
@@ -186,7 +193,7 @@ class Admin(commands.Cog):
             else:
                 sendInDm = True
             
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'join': {'sendInDm': sendInDm}}}})
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.join.sendInDm': sendInDm}})
 
             await ctx.command.parent.parent(ctx)
         else:
@@ -200,7 +207,7 @@ class Admin(commands.Cog):
         joinMessage = self.db.find_one({'id': ctx.guild.id})['messages']['join']
 
         if joinMessage['message']:
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'join': {'message': None}}}})
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.join.message': None}})
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.removed', '{success} **Welcome message removed!**'))
         else:
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.errors.disabled', '{error} **Welcome message isn\'t configured!** You can set it with: `{prefix}settings messages join [welcome message]`'))
@@ -215,9 +222,9 @@ class Admin(commands.Cog):
 
             already_exist = leaveMessage['message']
 
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'leave': {'message': leave_message}}}})
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.leave.message': leave_message}})
             if leaveMessage['textChannel'] is None:
-                self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'leave': {'textChannel': ctx.channel.id}}}})
+                self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.leave.textChannel': ctx.channel.id}})
 
             if already_exist:
                 await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.title.updated', '{success} **Leave message updated!**'))
@@ -234,7 +241,8 @@ class Admin(commands.Cog):
         leaveMessage = self.db.find_one({'id': ctx.guild.id})['messages']['leave']
 
         if leaveMessage['message']:
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'leave': {'textChannel': ctx.channel.id if text_channel is None else text_channel.id}}}})
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.leave.textChannel': ctx.channel.id if text_channel is None else text_channel.id}})
+            await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.text_channel_updated', '{success} **Text channel updated!** All the new leave messages will be sent in that channel.'))
         else:
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.errors.disabled', '{error} **Leave message isn\'t configured!** You can set it with: `{prefix}settings messages leave [leave message]`'))
 
@@ -248,7 +256,7 @@ class Admin(commands.Cog):
         leaveMessage = self.db.find_one({'id': ctx.guild.id})['messages']['leave']
 
         if leaveMessage['message']:
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages': {'leave': {'message': None}}}})
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {'messages.leave.message': None}})
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.removed', '{success} **Leave message removed!**'))
         else:
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.errors.disabled', '{error} **Leave message isn\'t configured!** You can set it with: `{prefix}settings messages leave [leave message]`'))

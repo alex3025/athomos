@@ -30,6 +30,8 @@ class ErrorHandler(commands.Cog):
                 return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.role_not_found', '{error} Role `{role}` not found!'), role=text))
             elif param == 'textchannel' or param == 'textchannels':
                 return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.text_channel_not_found', '{error} Text Channel `{text_channel}` not found!'), text_channel=text))
+            else:
+                return await ctx.send(self.msg.get(ctx, 'errors.bad_arguments', '{error} **Bad argument(s)!** Check the command.'))
 
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.missing_argument', '{error} **Syntax error!** Use: `{prefix}{name} {subcommands}`.'), name=ctx.command.qualified_name, subcommands=ctx.command.signature))

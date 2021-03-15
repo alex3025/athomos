@@ -1,4 +1,5 @@
 import json
+import discord
 from discord.ext import commands
 
 from .logger import Logger
@@ -17,12 +18,13 @@ class Messages:
             def __missing__(key):
                 return '{%s}' % key
 
+        context = message.author if isinstance(message, discord.Message) else message
         placeholders = {
-            'JoinedAtDate': message.author.joined_at.strftime('%d/%m/%Y'),
-            'JoinedAtTime': message.author.joined_at.strftime('%H:%M'),
-            'Mention': message.author.mention,
-            'Username': message.author.name,
-            'ServerMembersCount': len(message.author.guild.members)
+            'JoinedAtDate': context.joined_at.strftime('%d/%m/%Y'),
+            'JoinedAtTime': context.joined_at.strftime('%H:%M'),
+            'Mention': context.mention,
+            'Username': context.name,
+            'ServerMembersCount': len(context.guild.members)
         }
 
         return format_dict(placeholders)

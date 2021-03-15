@@ -88,7 +88,7 @@ class CustomCommands(commands.Cog):
         customCommands = self.db.find_one({'id': ctx.guild.id})['customCommands']
 
         if name in customCommands:
-            self.db.update_one({'id': ctx.guild.id}, {'$pull': {'customCommands': name}})
+            self.db.update_one({'id': ctx.guild.id}, {'$unset': {f'customCommands.{name}': ""}})
             await ctx.send(self.msg.format(self.msg.get(ctx, 'customcommands.remove.removed', '{success} Custom command `{prefix}{name}` removed.'), name=name))
         else:
             await ctx.send(self.msg.get(ctx, 'customcommands.remove.errors.not_found', '{error} That custom command doesn\'t exist.'))

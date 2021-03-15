@@ -104,11 +104,12 @@ class Mod(commands.Cog):
         """
         muted_role = discord.utils.get(ctx.guild.roles, name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'))
         if not muted_role:
-            muted_role = await ctx.guild.create_role(name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'), reason=self.msg.get(ctx, 'mod.mute.role.created', 'The muted role didn\'t exist or it was deleted.'))
-            for channel in ctx.guild.text_channels:
-                perms = discord.PermissionOverwrite()
-                perms.send_messages = False
-                await channel.set_permissions(muted_role, overwrite=perms)
+            async with ctx.typing():
+                muted_role = await ctx.guild.create_role(name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'), reason=self.msg.get(ctx, 'mod.mute.role.created', 'The muted role didn\'t exist or it was deleted.'))
+                for channel in ctx.guild.text_channels:
+                    perms = discord.PermissionOverwrite()
+                    perms.send_messages = False
+                    await channel.set_permissions(muted_role, overwrite=perms)
 
         if member == ctx.guild.owner or member == self.bot.user or member == ctx.author:
             await ctx.send(self.msg.get(ctx, 'mod.mute.errors.cannot_mute_this_member', '{error} You cannot mute this member!'))
