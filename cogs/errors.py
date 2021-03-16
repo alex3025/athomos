@@ -3,7 +3,6 @@ import traceback
 from discord.ext import commands
 
 from utils.logger import Logger
-from utils.database import Database
 from utils.messages import Messages
 
 
@@ -12,9 +11,7 @@ class ErrorHandler(commands.Cog):
         self.bot = bot
 
         self.msg = Messages()
-        self.db = Database()
         self.log = Logger()
-        self.session = self.db.session
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -33,6 +30,8 @@ class ErrorHandler(commands.Cog):
                 return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.role_not_found', '{error} Role `{role}` not found!'), role=text))
             elif param == 'textchannel' or param == 'textchannels':
                 return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.text_channel_not_found', '{error} Text Channel `{text_channel}` not found!'), text_channel=text))
+            else:
+                return await ctx.send(self.msg.get(ctx, 'errors.bad_arguments', '{error} **Bad argument(s)!** Check the command.'))
 
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(self.msg.format(self.msg.get(ctx, 'errors.missing_argument', '{error} **Syntax error!** Use: `{prefix}{name} {subcommands}`.'), name=ctx.command.qualified_name, subcommands=ctx.command.signature))

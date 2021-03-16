@@ -1,5 +1,5 @@
 {
-    "language_name": ":flag_en: English",
+    "language_name": ":flag_gb: English",
     "admin": {
         "settings": {
             "joinroles": {
@@ -23,7 +23,8 @@
                     "multi": "{success} Roles {roles} removed from welcome roles!",
                     "single": "{success} Role {role} removed from welcome roles!"
                 },
-                "title": "Welcome Roles"
+                "title": "Welcome Roles",
+                "footer": "These roles will be added when a new user joins the server."
             },
             "language": {
                 "available_languages": "Available languages",
@@ -43,7 +44,8 @@
                     "title": {
                         "created": "{success} **Welcome message set!**",
                         "updated": "{success} **Welcome message updated!**"
-                    }
+                    },
+                    "text_channel_updated": "{success} **Text channel updated!** If `sendInDm` is false, all the new join messages will be sent in that channel."
                 },
                 "join_message": {
                     "send_in_dm": "**JM** Send in DM",
@@ -64,7 +66,8 @@
                     "title": {
                         "created": "{success} **Leave message set!**",
                         "updated": "{success} **Leave message updated!**"
-                    }
+                    },
+                    "text_channel_updated": "{success} **Text channel updated!** All the new leave messages will be sent in that channel."
                 },
                 "leave_message": {
                     "text_channel": {
@@ -121,10 +124,16 @@
             "desc": "Show all custom commands for this server.",
             "remove": {
                 "desc": "Allows you to remove a custom command."
+            },
+            "edit": {
+                "desc": "Allows to edit a custom command."
             }
         },
         "help": {
-            "desc": "Shows this message"
+            "desc": "Shows this message."
+        },
+        "intro": {
+            "desc": "Shows the introduction message."
         },
         "kick": {
             "desc": "Allows you to kick a member."
@@ -230,20 +239,22 @@
         }
     },
     "customcommands": {
+        "errors": {
+            "already_exist": "{error} That custom command already exist.",
+            "is_bot_command": "{error} You cannot overwrite a bot command.",
+            "not_found": "{error} That custom command doesn't exist."
+        },
         "add": {
-            "added": "{success} Custom command `{prefix}{name}` created.",
-            "errors": {
-                "already_exist": "{error} That custom command already exist.",
-                "is_bot_command": "{error} You cannot overwrite a bot command."
-            }
+            "added": "{success} Custom command `{prefix}{name}` created."
+        },
+        "edit": {
+            "edited": "{success} You edited the `{prefix}{name}` custom command."
         },
         "remove": {
-            "errors": {
-                "not_found": "{error} That custom command doesn't exist."
-            },
             "removed": "{success} Custom command `{prefix}{name}` removed."
         },
-        "title": "Custom commands:"
+        "title": "Custom commands:",
+        "none": "{error} This server doesn't have any custom commands. You can add a new one with `{prefix}customcommands add <name> <text>`."
     },
     "errors": {
         "bot_missing_permissions": "{error} **Missing bot permissions!** To run this command I need these permissions: `{permissions}`.",
@@ -253,7 +264,8 @@
         "missing_permissions": "{error} **Missing permissions!** To run this command you need these permissions: `{permissions}`.",
         "owner_only": "{error} This command can be **executed only** by the bot owner!",
         "role_not_found": "{error} Role `{role}` not found!",
-        "text_channel_not_found": "{error} Text Channel `{text_channel}` not found!"
+        "text_channel_not_found": "{error} Text Channel `{text_channel}` not found!",
+        "bad_arguments": "{error} **Bad argument(s)!** Check the command."
     },
     "help": {
         "bot": {
@@ -286,9 +298,13 @@
             "invite": "Invite",
             "support": "Support",
             "title": "Links :pushpin:"
+        },
+        "intro": {
+            "title": "Hello there! :wave:",
+            "description": "I'm Athomos, a multi-purpose bot designed to be easy-to-use and user friendly.",
+            "footer": "To start using me, do {prefix}help and see all the available commands."
         }
     },
-    "language_name": ":flag_gb: English",
     "miscellaneous": {
         "command": "Command",
         "disabled": "Disabled",
@@ -297,7 +313,7 @@
     },
     "mod": {
         "announce": {
-            "title": "Announcement"
+            "title": ":loudspeaker: Announcement"
         },
         "ban": {
             "audit": {
@@ -383,10 +399,11 @@
             },
             "reported": "User reported:",
             "set": {
-                "changed": "{success} **Reports channel changed!** Now all reports will be sent to {channel}.",
-                "new": "{success} **Reports channel configured!** Now all reports will be sent to {channel}."
+                "changed": "{success} **Reports channel changed!** All reports will be sent to {channel}.",
+                "new": "{success} **Reports channel configured!** All reports will be sent to {channel}."
             },
-            "title": "Report"
+            "title": ":warning: Report",
+            "channel": "Channel:"
         },
         "unban": {
             "audit": {
@@ -421,7 +438,8 @@
             "bot_already_connect": "{error} I'm already connected to a voice channel!",
             "not_found": "{error} No results found for: `{search}`.",
             "not_playing": "{error} I'm not playing anything.",
-            "user_not_connected": "{error} You aren't connected to a voice channel!"
+            "user_not_connected": "{error} You aren't connected to a voice channel!",
+            "same_channel": "{error} I'm already connected to that channel!"
         },
         "now_playing": "**Now playing:** `{title}` requested by {requester}.",
         "play": {

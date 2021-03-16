@@ -9,7 +9,6 @@ from discord.ext import commands
 from async_timeout import timeout
 
 from utils.config import Config
-from utils.database import Database
 from utils.messages import Messages
 from utils.paginator import EmbedPaginator
 
@@ -18,7 +17,6 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 msg = Messages()
 config = Config()
-db = Database()
 
 
 class VoiceError(Exception):
@@ -126,7 +124,7 @@ class Song:
         self.duration = lambda ctx: str(datetime.timedelta(seconds=source.duration)).lstrip('0').replace(' 0', ' ').lstrip(':') if not source.is_live else msg.get(ctx, 'music.play.live', '**LIVE** :red_circle:')
 
     def enqueued_embed(self, ctx):
-        e = discord.Embed(colour=config.embeds_color, title=msg.format(msg.get(ctx, 'music.play.title', '{success} Song added to the queue! [{position}]'), position=len(ctx.voice_state.songs) if not ctx.voice_state.voice.is_playing() else len(ctx.voice_state.songs) + 1))
+        e = discord.Embed(colour=config.embeds_color, title=msg.format(msg.get(ctx, 'music.play.title', '{success} Song added to the queue! [{position}]'), position=len(ctx.voice_state.songs) if ctx.voice_state.voice and ctx.voice_state.voice.is_playing() else len(ctx.voice_state.songs) + 1))
 
         e.set_thumbnail(url=self.source.thumbnail)
 
@@ -271,27 +269,43 @@ class Music(commands.Cog):
         """
         Allows you to invoke the bot in the current voice channel.
         """
-        destination = channel or ctx.author.voice.channel
-        if ctx.voice_state.voice:
-            return await ctx.voice_state.voice.move_to(destination)
-        ctx.voice_state.voice = await destination.connect()
+        if channel is None:
+            if ctx.author.voice:
+                channel = ctx.author.voice.channel
+            else:
+                return await ctx.send(msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
 
-        await ctx.send(msg.format(msg.get(ctx, 'music.summon.connected', '{success} Connected to **{channel}**!'), channel=destination))
+        if ctx.voice_state.voice:
+            if ctx.voice_state.voice.channel == channel:
+                return await ctx.send(msg.get(ctx, 'music.errors.same_channel', '{error} I\'m already connected to that channel!'))
+            return await ctx.voice_state.voice.move_to(channel)
+
+        ctx.voice_state.voice = await channel.connect()
+        await ctx.send(msg.format(msg.get(ctx, 'music.summon.connected', '{success} Connected to **{channel}**!'), channel=channel))
 
     @commands.command(name='stop', aliases=['disconnect', 'leave', 'dc'])
     async def _stop(self, ctx):
         """
         Allows you to stop playback.
         """
-        await ctx.voice_state.stop()
-        del self.voice_states[ctx.guild.id]
-        await ctx.message.add_reaction('⏹')
+        if ctx.voice_state.voice:
+            await ctx.voice_state.stop()
+            del self.voice_states[ctx.guild.id]
+            await ctx.message.add_reaction('⏹')
+        else:
+            await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
 
     @commands.command(name='volume', aliases=['vol'])
     async def _volume(self, ctx, *, volume: int=None):
         """
         Allows you to view, raise or lower the volume.
         """
+
+        if not ctx.voice_state.voice:
+            return await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
+        if not ctx.author.voice:
+            return await ctx.send(msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
+
         current_volume = ctx.voice_state.volume
 
         if volume is None:
@@ -336,22 +350,25 @@ class Music(commands.Cog):
         """
         Allows you to pause playback.
         """
-        if ctx.voice_state.voice.is_playing():
-            ctx.voice_state.voice.pause()
-            await ctx.message.add_reaction('⏸️')
-        else:
-            return await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
+        if ctx.voice_state.voice:
+            if ctx.voice_state.voice.is_playing():
+                ctx.voice_state.voice.pause()
+                return await ctx.message.add_reaction('⏸️')
+        return await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
 
     @commands.command(name='resume')
     async def _resume(self, ctx):
         """
         Allows you to resume playback.
         """
-        if ctx.voice_state.voice.is_paused():
-            ctx.voice_state.voice.resume()
-            await ctx.message.add_reaction('▶️')
+        if ctx.voice_state.voice:
+            if ctx.voice_state.voice.is_paused():
+                ctx.voice_state.voice.resume()
+                await ctx.message.add_reaction('▶️')        
+            else:
+                await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
         else:
-            await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
+            await ctx.send(msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
 
     @commands.command(name='skip')
     async def _skip(self, ctx):
@@ -360,8 +377,11 @@ class Music(commands.Cog):
 
         If you have requested the current song, you can immediately skip without a vote.
         """
-        if not ctx.voice_state.is_playing:
-            return await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
+        if ctx.voice_state:
+            if not ctx.voice_state.is_playing:
+                return await ctx.send(msg.get(ctx, 'music.errors.not_playing', '{error} I\'m not playing anything.'))
+        else:
+            return await ctx.send(msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
 
         voter = ctx.message.author
         skipped = False

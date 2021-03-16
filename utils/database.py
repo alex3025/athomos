@@ -1,109 +1,49 @@
-import sqlalchemy as master
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from pymongo import MongoClient
 
 from utils.config import Config
 from utils.logger import Logger
 
 
-config = Config()
 log = Logger()
-
-Base = declarative_base()
-engine = master.create_engine(config.db_uri)
-Session = sessionmaker(bind=engine)
+cluster = MongoClient(Config().db_uri)
 
 
 class Database:
-
     def __init__(self):
-        self.session = Session()
-        Base.metadata.create_all(bind=engine)
-
-    class Guilds(Base):
-        __tablename__ = 'Guilds'
-
-        # Base
-        guild_id = master.Column(master.Integer, primary_key=True, autoincrement=False)
-
-        prefix = master.Column(master.String, default='!')
-        language = master.Column(master.String, default='it_IT')
-
-    class Admin(Base):
-        __tablename__ = 'Admin'
-
-        guild_id = master.Column(master.Integer, primary_key=True, autoincrement=False)
-
-        join_message = master.Column(master.String, default=None)
-        join_message_textChannel = master.Column(master.Integer, default=None)
-        join_message_sendInDM = master.Column(master.Boolean, default=False)
-
-        leave_message = master.Column(master.String, default=None)
-        leave_message_textChannel = master.Column(master.Integer, default=None)
-
-        welcome_roles = master.Column(master.String, default='')
-
-    class Mod(Base):
-        __tablename__ = 'Mod'
-
-        guild_id = master.Column(master.Integer, primary_key=True, autoincrement=False)
-
-        reports_channel = master.Column(master.Integer, default=None)
-
-    class CustomCommands(Base):
-        __tablename__ = 'Custom Commands'
-
-        guild_id = master.Column(master.Integer, primary_key=True, autoincrement=False)
-
-        customcommands = master.Column(master.String, default='[]')
-    
-
-    def get(self, filter_, table=Guilds):
-        return self.session.query(table).filter(filter_).first()
+        self.db = cluster[Config().db_name][Config().db_collection_name]
 
 
-    def createTables(self, guild):
-        # self.session.add(self.db.Guild(guild_id=guild.id, language=guild.preferred_locale.replace('-', '_') if guild.preferred_locale.replace('-', '_') + '.json' in os.listdir('config/i18n/') else 'en_EN'))
-        self.session.add(self.Guilds(guild_id=guild.id))
-        self.session.add(self.Admin(guild_id=guild.id))
-        self.session.add(self.Mod(guild_id=guild.id))
-        self.session.add(self.CustomCommands(guild_id=guild.id))
+    def on_guild_join(self, guild):
+        self.db.insert_one({
+            'id': guild.id,
+            'prefix': '!',
+            'language': 'it_IT',
+            'messages': {
+                'join': {
+                    'message': None,
+                    'textChannel': None,
+                    'sendInDm': False
+                },
+                'leave': {
+                    'message': None,
+                    'textChannel': None
+                }
+            },
+            'welcomeRoles': [],
+            'reportsChannel': None,
+            'customCommands': {}
+        })
 
-        self.session.commit()
-        log.debug('Added new guild to the database.')
 
-    def deleteTables(self, guild):
-        try:
-            self.session.delete(self.get(self.Guilds.guild_id == guild.id))
-            self.session.delete(self.get(self.Admin.guild_id == guild.id, self.Admin))
-            self.session.delete(self.get(self.Mod.guild_id == guild.id, self.Mod))
-            self.session.delete(self.get(self.CustomCommands.guild_id == guild.id, self.CustomCommands))
+    def add_missing_guilds(self, bot):
+        addedMissingGuilds = 0
 
-            self.session.commit()
-            log.debug('Removed a guild from the database.')
-        except sqlalchemy.orm.exc.UnmappedInstanceError:
-            pass
+        for guild in bot.guilds:  # Add missing guilds
+            if self.db.find_one({'id': guild.id}) is None:  # Not Found
+                self.on_guild_join(guild)
+                addedMissingGuilds += 1
 
-
-    def checkDatabase(self, bot):
-        log.debug('Checking database for sync errors...')
-
-        firstCase = False
-        secondCase = False
-        for guild in bot.guilds:
-            for table in Base.__subclasses__():
-                dbGuild = self.get(table.guild_id == guild.id)
-                if dbGuild is None:
-                    self.createTables(guild)
-                    firstCase = True  
-                else:
-                    if not dbGuild.guild_id == guild.id:
-                        self.deleteTables(guild)
-                        secondCase = True
-
-            if firstCase:
-                log.info('Missing guild added to the database.')
-            if secondCase:
-                log.info('Ghost guild removed from the database.')
-
-        log.debug('Database checked.')
+        if addedMissingGuilds > 0:
+            log.info(f'{addedMissingGuilds} missing guild(s) added to the database.')
+        
+        log.debug('Fixed database guilds references.')

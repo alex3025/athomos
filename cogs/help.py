@@ -1,16 +1,14 @@
 import discord
 import itertools
+from discord import colour
 from discord.ext import commands
 from discord.ext.commands.core import Group
 
 from utils.config import Config
-from utils.database import Database
 from utils.messages import Messages
 
 
-db = Database()
 msg = Messages()
-cfg = Config()
 
 
 class EmbedPaginator(commands.Paginator):
@@ -21,7 +19,7 @@ class EmbedPaginator(commands.Paginator):
         self.clear()
 
     def clear(self):
-        self._current_page = discord.Embed(colour=cfg.embeds_color)
+        self._current_page = discord.Embed(colour=Config().embeds_color)
         self._count = 0
         self._pages = []
 
@@ -91,7 +89,7 @@ class BotHelp(commands.DefaultHelpCommand):
         signature = signature.replace('command', msg.get(self.context, 'miscellaneous.command', 'Command').lower())
 
         try:
-            for key, value in msg.parse('config/i18n/' + self.context.bot.current_lang(self.context.message) + '.json')['command_arguments'].items():
+            for key, value in msg.parse('config/i18n/' + msg.get_locale(self.context.guild.id)[0] + '.json')['command_arguments'].items():
                 if f'[{key}]' in signature:
                     signature = signature.replace(f'[{key}]', f'[{value}]')
                 elif f'[{key}...]' in signature:
@@ -232,6 +230,30 @@ class Support(commands.Cog):
         self._original_help_command = self.bot.help_command
         self.bot.help_command = BotHelp(paginator=EmbedPaginator())
         self.bot.help_command.cog = self
+    
+
+    # Functions
+    async def intro(self, ctx):
+        e = discord.Embed(colour=Config().embeds_color, title=msg.get(ctx, 'help.intro.title', 'Hello there! :wave:'))
+        e.description = msg.get(ctx, 'help.intro.description', 'I\'m Athomos, a multi-purpose bot designed to be easy-to-use and user friendly.')
+        e.set_footer(text=msg.get(ctx, 'help.intro.footer', 'To start using me, do {prefix}help and see all the available commands.'))
+        await ctx.send(embed=e)
+
+
+    # Events
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if self.bot.user in message.mentions and message.content.replace('!', '').replace(str(self.bot.user.mention), '') == '':
+            await self.intro(await self.bot.get_context(message))
+    
+
+    # Commands
+    @commands.command(name='intro')
+    async def _intro(self, ctx):
+        """
+        Shows the introduction message.
+        """
+        await self.intro(ctx)
 
 
 def setup(bot):

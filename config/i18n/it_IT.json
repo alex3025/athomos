@@ -23,7 +23,8 @@
                     "multi": "{success} I ruoli {roles} sono stati rimossi dai ruoli di benvenuto!",
                     "single": "{success} Il ruolo {role} è stato rimosso dai ruoli di benvenuto!"
                 },
-                "title": "Ruoli di benvenuto"
+                "title": "Ruoli di benvenuto",
+                "footer": "Questi ruoli verranno applicati quando un nuovo utente entra nel server."
             },
             "language": {
                 "available_languages": "Lingue disponibili",
@@ -43,7 +44,8 @@
                     "title": {
                         "created": "{success} **Il messaggio di benvenuto è stato creato!**",
                         "updated": "{success} **Il messaggio di benvenuto è stato cambiato!**"
-                    }
+                    },
+                    "text_channel_updated": "{success} **Canale testuale aggiornato!** Se `sendInDm` è falsa, tutti i nuovi messaggi di benvenuto verranno inviati in quel canale."
                 },
                 "join_message": {
                     "send_in_dm": "**JM** Invia nei DM",
@@ -64,7 +66,8 @@
                     "title": {
                         "created": "{success} **Il messaggio di uscita è stato creato!**",
                         "updated": "{success} **Il messaggio di benvenuto è stato cambiato!**"
-                    }
+                    },
+                    "text_channel_updated": "{success} **Canale testuale aggiornato!** Tutti i nuovi messaggi di uscita verranno inviati in quel canale."
                 },
                 "leave_message": {
                     "text_channel": {
@@ -121,10 +124,16 @@
             "desc": "Mostra tutti i comandi personalizzati in questo server.",
             "remove": {
                 "desc": "Rimuove un comando personalizzato."
+            },
+            "edit": {
+                "desc": "Modifica un comando personalizzato."
             }
         },
         "help": {
             "desc": "Mostra il messaggio di aiuto."
+        },
+        "intro": {
+            "desc": "Mostra il messaggio di introduzione."
         },
         "kick": {
             "desc": "Espelle un membro."
@@ -230,20 +239,22 @@
         }
     },
     "customcommands": {
+        "errors": {
+            "already_exist": "{error} Il comando personalizzato esiste già.",
+            "is_bot_command": "{error} Non puoi sovrascrivere un comando del bot.",
+            "not_found": "{error} Il comando personalizzato non esiste."
+        },
         "add": {
-            "added": "{success} Il comando personalizzato `{prefix}{name}` è stato creato con successo.",
-            "errors": {
-                "already_exist": "{error} Il comando personalizzato esiste già.",
-                "is_bot_command": "{error} Non puoi sovrascrivere un comando del bot."
-            }
+            "added": "{success} Il comando personalizzato `{prefix}{name}` è stato creato con successo."  
+        },
+        "edit": {
+            "edited": "{success} Hai modificato il comando personalizzato `{prefix}{name}`."
         },
         "remove": {
-            "errors": {
-                "not_found": "{error} Il comando personalizzato non esiste."
-            },
             "removed": "{success} Il comando personalizzato `{prefix}{name}` è stato rimosso con successo."
         },
-        "title": "Comandi personalizzati:"
+        "title": "Comandi personalizzati:",
+        "none": "{error} Questo server non ha nessun comando personalizzato. Ne puoi aggiungere digitanto `{prefix}customcommands add <name> <text>`."
     },
     "errors": {
         "bot_missing_permissions": "{error} **Permessi del bot mancanti!** Per esesguire questo comando ho bisogno di questi permessi: `{permissions}`.",
@@ -253,7 +264,8 @@
         "missing_permissions": "{error} **Permessi mancanti!** Per eseguire questo comando hai bisogno di questi permessi: `{permissions}`.",
         "owner_only": "{error} Questo comando può essere eseguito **solamente** dal proprietario del bot!",
         "role_not_found": "{error} Ruolo `{role}` non trovato!",
-        "text_channel_not_found": "{error} Canale testuale `{text_channel}` non trovato!"
+        "text_channel_not_found": "{error} Canale testuale `{text_channel}` non trovato!",
+        "bad_arguments": "{error} **Uno o più argomenti errati!** Controlla il comando."
     },
     "help": {
         "bot": {
@@ -286,6 +298,11 @@
             "invite": "Invita",
             "support": "Supporto",
             "title": "Links :pushpin:"
+        },
+        "intro": {
+            "title": "Ehilà! :wave:",
+            "description": "Io sono Athomos, un bot multifunzione pensato per essere facile da usare ed user-friendly.",
+            "footer": "Per iniziare ad utilizzarmi, digita {prefix}help e guarda tutti i comandi disponibili."
         }
     },
     "miscellaneous": {
@@ -296,7 +313,7 @@
     },
     "mod": {
         "announce": {
-            "title": "Annuncio"
+            "title": ":loudspeaker: Annuncio"
         },
         "ban": {
             "audit": {
@@ -383,10 +400,11 @@
             "reported": "Utente segnalato:",
             "report_sent": "{success} **Segnalazione inviata!** Un amministratore è stato avvertito.",
             "set": {
-                "changed": "{success} **Canale delle segnalazioni cambiato!** Ora tutte le segnalazioni verranno mandate su {channel}.",
-                "new": "{success} **Canale delle segnalazioni configurato!** Ora tutte le segnalazioni verranno mandate su {channel}."
+                "changed": "{success} **Canale delle segnalazioni cambiato!** Tutte le nuove segnalazioni verranno mandate su {channel}.",
+                "new": "{success} **Canale delle segnalazioni configurato!** Tutte le nuove segnalazioni verranno mandate su {channel}."
             },
-            "title": "Segnalazione"
+            "title": ":warning: Segnalazione",
+            "channel": "Canale:"
         },
         "unban": {
             "audit": {
@@ -420,8 +438,9 @@
         "errors": {
             "bot_already_connect": "{error} Sono già connesso ad un canale vocale!",
             "not_found": "{error} Nessun risultato trovato per: `{search}`.",
-            "not_playing": "{error} Non sto riproducendo nulla.",
-            "user_not_connected": "{error} Non sei connesso ad un canale vocale!"
+            "not_playing": "{error} Non sto riproducendo nulla!",
+            "user_not_connected": "{error} Non sei connesso ad un canale vocale!",
+            "same_channel": "{error} Sono già connesso a quel canale vocale!"
         },
         "now_playing": "**In riproduzione:** `{title}` richiesto da {requester}.",
         "play": {
@@ -432,7 +451,7 @@
             "uploader": "Caricata da:"
         },
         "queue": {
-            "empty": "{error} La coda è vuota.",
+            "empty": "{error} La coda è vuota!",
             "requester": "Richiesto da {requester}",
             "title": "Coda musicale:"
         },
