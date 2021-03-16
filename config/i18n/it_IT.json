@@ -124,10 +124,16 @@
             "desc": "Mostra tutti i comandi personalizzati in questo server.",
             "remove": {
                 "desc": "Rimuove un comando personalizzato."
+            },
+            "edit": {
+                "desc": "Modifica un comando personalizzato."
             }
         },
         "help": {
             "desc": "Mostra il messaggio di aiuto."
+        },
+        "intro": {
+            "desc": "Mostra il messaggio di introduzione."
         },
         "kick": {
             "desc": "Espelle un membro."
@@ -233,21 +239,22 @@
         }
     },
     "customcommands": {
+        "errors": {
+            "already_exist": "{error} Il comando personalizzato esiste già.",
+            "is_bot_command": "{error} Non puoi sovrascrivere un comando del bot.",
+            "not_found": "{error} Il comando personalizzato non esiste."
+        },
         "add": {
-            "added": "{success} Il comando personalizzato `{prefix}{name}` è stato creato con successo.",
-            "errors": {
-                "already_exist": "{error} Il comando personalizzato esiste già.",
-                "is_bot_command": "{error} Non puoi sovrascrivere un comando del bot."
-            }
+            "added": "{success} Il comando personalizzato `{prefix}{name}` è stato creato con successo."  
+        },
+        "edit": {
+            "edited": "{success} Hai modificato il comando personalizzato `{prefix}{name}`."
         },
         "remove": {
-            "errors": {
-                "not_found": "{error} Il comando personalizzato non esiste."
-            },
             "removed": "{success} Il comando personalizzato `{prefix}{name}` è stato rimosso con successo."
         },
         "title": "Comandi personalizzati:",
-        "none": "{error} Questo server non ha nessun comando personalizzato."
+        "none": "{error} Questo server non ha nessun comando personalizzato. Ne puoi aggiungere digitanto `{prefix}customcommands add <name> <text>`."
     },
     "errors": {
         "bot_missing_permissions": "{error} **Permessi del bot mancanti!** Per esesguire questo comando ho bisogno di questi permessi: `{permissions}`.",
@@ -293,7 +300,7 @@
             "title": "Links :pushpin:"
         },
         "intro": {
-            "title": "Heilà! :wave:",
+            "title": "Ehilà! :wave:",
             "description": "Io sono Athomos, un bot multifunzione pensato per essere facile da usare ed user-friendly.",
             "footer": "Per iniziare ad utilizzarmi, digita {prefix}help e guarda tutti i comandi disponibili."
         }
@@ -306,7 +313,7 @@
     },
     "mod": {
         "announce": {
-            "title": "Annuncio"
+            "title": ":loudspeaker: Annuncio"
         },
         "ban": {
             "audit": {

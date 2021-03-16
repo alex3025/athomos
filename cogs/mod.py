@@ -175,16 +175,15 @@ class Mod(commands.Cog):
         """
         Allows to send a message in all the channels of the server where the bot can write.
         """
-        await ctx.message.add_reaction('<:athomos_success:600278477421281280>')
-        for channel in ctx.guild.text_channels:
-            if channel.permissions_for(ctx.guild.me).send_messages:
-                e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'mod.announce.title', 'Announcement'), description=message, timestamp=datetime.utcnow())
-                e.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+        e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'mod.announce.title', ':loudspeaker: Announcement'), description=message, timestamp=datetime.utcnow())
+        e.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
 
-                try:
-                    await channel.send(embed=e)
-                except:
-                    pass
+        try:
+            await ctx.send(embed=e)
+        except:
+            pass
+        finally:
+            await ctx.message.add_reaction('<:athomos_success:600278477421281280>')
 
 
     @commands.group(name='report', invoke_without_command=True)
@@ -268,10 +267,10 @@ class Mod(commands.Cog):
 
 
     async def purge(self, ctx, limit, all_=True):
-        async with ctx.channel.typing():
-            if limit > 2000:
-                return await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.clean.errors.too_many_messages', '{error} **Too many messages!** Try a lower number. ({limit}/2000)'), limit=limit))
+        if limit > 2000:
+            return await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.clean.errors.too_many_messages', '{error} **Too many messages!** Try a lower number. ({limit}/2000)'), limit=limit))
 
+        async with ctx.typing():
             def only_commands(message):
                 return message.author == self.bot.user
 

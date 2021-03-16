@@ -124,7 +124,7 @@ class Song:
         self.duration = lambda ctx: str(datetime.timedelta(seconds=source.duration)).lstrip('0').replace(' 0', ' ').lstrip(':') if not source.is_live else msg.get(ctx, 'music.play.live', '**LIVE** :red_circle:')
 
     def enqueued_embed(self, ctx):
-        e = discord.Embed(colour=config.embeds_color, title=msg.format(msg.get(ctx, 'music.play.title', '{success} Song added to the queue! [{position}]'), position=len(ctx.voice_state.songs) if not ctx.voice_state.voice.is_playing() else len(ctx.voice_state.songs) + 1))
+        e = discord.Embed(colour=config.embeds_color, title=msg.format(msg.get(ctx, 'music.play.title', '{success} Song added to the queue! [{position}]'), position=len(ctx.voice_state.songs) if ctx.voice_state.voice and ctx.voice_state.voice.is_playing() else len(ctx.voice_state.songs) + 1))
 
         e.set_thumbnail(url=self.source.thumbnail)
 

@@ -124,10 +124,16 @@
             "desc": "Show all custom commands for this server.",
             "remove": {
                 "desc": "Allows you to remove a custom command."
+            },
+            "edit": {
+                "desc": "Allows to edit a custom command."
             }
         },
         "help": {
-            "desc": "Shows this message"
+            "desc": "Shows this message."
+        },
+        "intro": {
+            "desc": "Shows the introduction message."
         },
         "kick": {
             "desc": "Allows you to kick a member."
@@ -233,21 +239,22 @@
         }
     },
     "customcommands": {
+        "errors": {
+            "already_exist": "{error} That custom command already exist.",
+            "is_bot_command": "{error} You cannot overwrite a bot command.",
+            "not_found": "{error} That custom command doesn't exist."
+        },
         "add": {
-            "added": "{success} Custom command `{prefix}{name}` created.",
-            "errors": {
-                "already_exist": "{error} That custom command already exist.",
-                "is_bot_command": "{error} You cannot overwrite a bot command."
-            }
+            "added": "{success} Custom command `{prefix}{name}` created."
+        },
+        "edit": {
+            "edited": "{success} You edited the `{prefix}{name}` custom command."
         },
         "remove": {
-            "errors": {
-                "not_found": "{error} That custom command doesn't exist."
-            },
             "removed": "{success} Custom command `{prefix}{name}` removed."
         },
         "title": "Custom commands:",
-        "none": "{error} This server doesn't have any custom commands."
+        "none": "{error} This server doesn't have any custom commands. You can add a new one with `{prefix}customcommands add <name> <text>`."
     },
     "errors": {
         "bot_missing_permissions": "{error} **Missing bot permissions!** To run this command I need these permissions: `{permissions}`.",
@@ -306,7 +313,7 @@
     },
     "mod": {
         "announce": {
-            "title": "Announcement"
+            "title": ":loudspeaker: Announcement"
         },
         "ban": {
             "audit": {

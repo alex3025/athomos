@@ -33,7 +33,7 @@ if config.save_logs:
         log.info('Creating "logs" path.')
         os.makedirs('logs')
 
-    fhandler = logging.FileHandler(filename='logs/{}.log'.format(time.strftime("%d-%m-%Y_%H.%M.%S")), encoding='utf-8', mode='w')
+    fhandler = logging.FileHandler(filename='logs/{}.log'.format(time.strftime("%d-%m-%Y_%H.%M.%S") if not config.purge_logs else 'latest'), encoding='utf-8', mode='w')
     fhandler.setLevel('DEBUG')
     fhandler.setFormatter(logging.Formatter('(%(asctime)s) %(levelname)s: %(message)s', datefmt=time.strftime("%d/%m/%Y-%H:%M:%S")))
     log.addHandler(fhandler)

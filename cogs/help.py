@@ -236,7 +236,7 @@ class Support(commands.Cog):
     async def intro(self, ctx):
         e = discord.Embed(colour=Config().embeds_color, title=msg.get(ctx, 'help.intro.title', 'Hello there! :wave:'))
         e.description = msg.get(ctx, 'help.intro.description', 'I\'m Athomos, a multi-purpose bot designed to be easy-to-use and user friendly.')
-        e.set_footer(text=msg.format(msg.get(ctx, 'help.intro.footer', 'To start using me, do {prefix}help and see all the available commands.'), prefix=list(await self.bot.get_prefix(ctx.message))[-1]))
+        e.set_footer(text=msg.get(ctx, 'help.intro.footer', 'To start using me, do {prefix}help and see all the available commands.'))
         await ctx.send(embed=e)
 
 
@@ -250,6 +250,9 @@ class Support(commands.Cog):
     # Commands
     @commands.command(name='intro')
     async def _intro(self, ctx):
+        """
+        Shows the introduction message.
+        """
         await self.intro(ctx)
 
 

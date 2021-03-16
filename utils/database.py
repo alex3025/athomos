@@ -36,14 +36,14 @@ class Database:
 
 
     def add_missing_guilds(self, bot):
-        addedMissingGuilds = False
+        addedMissingGuilds = 0
 
         for guild in bot.guilds:  # Add missing guilds
             if self.db.find_one({'id': guild.id}) is None:  # Not Found
                 self.on_guild_join(guild)
-                addedMissingGuilds = True
+                addedMissingGuilds += 1
 
-        if addedMissingGuilds:
-            log.info('Missing guild(s) added to the database.')
+        if addedMissingGuilds > 0:
+            log.info(f'{addedMissingGuilds} missing guild(s) added to the database.')
         
         log.debug('Fixed database guilds references.')

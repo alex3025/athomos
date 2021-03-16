@@ -56,7 +56,7 @@ class CustomCommands(commands.Cog):
             fields = [{'**' + list(await self.bot.get_prefix(ctx.message))[-1] + name + '**': attrs['data'].format_map(self.msg.placeholders(ctx.message))} for name, attrs in self.db.find_one({'id': ctx.guild.id})['customCommands'].items()]
 
             if len(fields) <= 0:
-                return await ctx.send(self.msg.get(ctx, 'customcommands.none', '{error} This server doesn\'t have any custom commands.'))
+                return await ctx.send(self.msg.get(ctx, 'customcommands.none', '{error} This server doesn\'t have any custom commands. You can add a new one with `{prefix}customcommands add <name> <text>`.'))
 
             e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.title', 'Custom commands:'))
             pages = menus.MenuPages(source=EmbedPaginator(embed=e, fields=fields, ctx=ctx, per_page=10), clear_reactions_after=True)
@@ -69,7 +69,7 @@ class CustomCommands(commands.Cog):
         Allows you to create a new custom command.
         """
         if self.bot.get_command(name):
-            return await ctx.send(self.msg.get(ctx, 'customcommands.add.errors.is_bot_command', '{error} You cannot overwrite a bot command.'))
+            return await ctx.send(self.msg.get(ctx, 'customcommands.errors.is_bot_command', '{error} You cannot overwrite a bot command.'))
 
         customCommands = self.db.find_one({'id': ctx.guild.id})['customCommands']
         
@@ -77,7 +77,21 @@ class CustomCommands(commands.Cog):
             self.db.update_one({'id': ctx.guild.id}, {'$set': {f'customCommands.{name}': {'type': 'text', 'data': text}}}, upsert=True)
             await ctx.send(self.msg.format(self.msg.get(ctx, 'customcommands.add.added', '{success} Custom command `{prefix}{name}` created.'), name=name))
         else:
-            await ctx.send(self.msg.get(ctx, 'customcommands.add.errors.already_exist', '{error} That custom command already exist.'))
+            await ctx.send(self.msg.get(ctx, 'customcommands.errors.already_exist', '{error} That custom command already exist.'))
+
+
+    @_customcommands.command(name='edit', aliases=['modify', 'update'])
+    async def _customcommands_edit(self, ctx, name, *, text):
+        """
+        Allows to edit a custom command.
+        """
+        customCommands = self.db.find_one({'id': ctx.guild.id})['customCommands']
+
+        if name in customCommands:
+            self.db.update_one({'id': ctx.guild.id}, {'$set': {f'customCommands.{name}.data': text}})
+            await ctx.send(self.msg.format(self.msg.get(ctx, 'customcommands.edit.edited', '{success} You edited the `{prefix}{name}` custom command.'), name=name))
+        else:
+            await ctx.send(self.msg.get(ctx, 'customcommands.errors.not_found', '{error} That custom command doesn\'t exist.'))
 
 
     @_customcommands.command(name='remove', aliases=['delete'])
@@ -91,7 +105,7 @@ class CustomCommands(commands.Cog):
             self.db.update_one({'id': ctx.guild.id}, {'$unset': {f'customCommands.{name}': ""}})
             await ctx.send(self.msg.format(self.msg.get(ctx, 'customcommands.remove.removed', '{success} Custom command `{prefix}{name}` removed.'), name=name))
         else:
-            await ctx.send(self.msg.get(ctx, 'customcommands.remove.errors.not_found', '{error} That custom command doesn\'t exist.'))
+            await ctx.send(self.msg.get(ctx, 'customcommands.errors.not_found', '{error} That custom command doesn\'t exist.'))
 
 
 def setup(bot):
