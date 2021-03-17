@@ -365,7 +365,9 @@
             "errors": {
                 "already_muted": "{error} Questo utente è già mutato!",
                 "cannot_mute_this_member": "{error} Non puoi mutare questo membro!",
-                "missing_permissions": "{error} Non hai i permessi per mutare questo membro."
+                "bot_missing_permissions": "{error} Non posso mutare questo membro!",
+                "missing_permissions": "{error} Non hai i permessi per mutare questo membro.",
+                "cannot_set_permissions": "{error} C'è stato un errore nell'impostare i permessi del ruolo per i mutati, prova a controllare la gerarchia del ruolo del bot. **Il comando potrebbe non funzionare correttamente.**"
             },
             "guild": {
                 "no_reason": "{success} {muted} è stato mutato da {author}.",

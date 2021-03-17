@@ -365,7 +365,9 @@
             "errors": {
                 "already_muted": "{error} This user is already muted!",
                 "cannot_mute_this_member": "{error} You cannot mute this member!",
-                "missing_permissions": "{error} You don't have the permissions to mute this member."
+                "missing_permissions": "{error} You don't have the permissions to mute this member.",
+                "bot_missing_permissions": "{error} I don't have the permissions to mute this member.",
+                "cannot_set_permissions": "{error} There was an error when configuring the muted role, try to check the hierarchy of the bot role. **The command may not work correctly.**"
             },
             "guild": {
                 "no_reason": "{success} {muted} was muted by {author}.",

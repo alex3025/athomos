@@ -1,8 +1,6 @@
-import json
+
 import discord
-import sqlalchemy
-from discord.ext import menus
-from discord.ext import commands
+from discord.ext import menus, commands
 
 from utils.config import Config
 from utils.database import Database
@@ -37,13 +35,16 @@ class CustomCommands(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.author == self.bot.user and message.guild:
-            customCommands = self.db.find_one({'id': message.guild.id})['customCommands']
-            for customCommand in customCommands:
-                if customCommand == message.content.replace(list(await self.bot.get_prefix(message))[-1], ''):
-                    if customCommands[customCommand]['type'] == 'text':
-                        return await message.channel.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(message)))
-                    # elif customCommand['type'] == 'role':
-                    #     await message.author.add_roles(customCommand['data'], reason=f'Added by customcommand: {message.content}')
+            try:
+                customCommands = self.db.find_one({'id': message.guild.id})['customCommands']
+                for customCommand in customCommands:
+                    if customCommand == message.content.replace(list(await self.bot.get_prefix(message))[-1], ''):
+                        if customCommands[customCommand]['type'] == 'text':
+                            return await message.channel.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(message)))
+                        # elif customCommand['type'] == 'role':
+                        #     await message.author.add_roles(customCommand['data'], reason=f'Added by customcommand: {message.content}')
+            except TypeError:
+                pass
 
 
     # Commands

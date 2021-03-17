@@ -1,5 +1,4 @@
 import discord
-import sqlalchemy
 from discord.ext import commands
 from datetime import datetime
 
@@ -109,7 +108,10 @@ class Mod(commands.Cog):
                 for channel in ctx.guild.text_channels:
                     perms = discord.PermissionOverwrite()
                     perms.send_messages = False
-                    await channel.set_permissions(muted_role, overwrite=perms)
+                    try:
+                        await channel.set_permissions(muted_role, overwrite=perms)
+                    except discord.Forbidden:
+                        await ctx.send(self.msg.get(ctx, 'mod.mute.errors.cannot_set_permissions', '{error} There was an error when configuring the muted role, try to check the hierarchy of the bot role. **The command may not work correctly.**'))
 
         if member == ctx.guild.owner or member == self.bot.user or member == ctx.author:
             await ctx.send(self.msg.get(ctx, 'mod.mute.errors.cannot_mute_this_member', '{error} You cannot mute this member!'))
@@ -118,11 +120,9 @@ class Mod(commands.Cog):
         else:
             audit_reason = self.msg.format(self.msg.get(ctx, 'mod.mute.audit.reason', 'Muted by {author}.\nReason: {reason}'), author=str(ctx.author), reason=reason) if reason else self.msg.format(self.msg.get(ctx, 'mod.mute.audit.no_reason', 'Muted by {author}.'), author=str(ctx.author))
             try:
-                await member.edit(reason=audit_reason)
-            except discord.errors.HTTPException:
-                pass
-
-            await member.add_roles(muted_role, reason=audit_reason)
+                await member.add_roles(muted_role, reason=audit_reason)
+            except discord.Forbidden:
+                return await ctx.send(self.msg.get(ctx, 'mod.mute.errors.bot_missing_permissions', '{error} I don\'t have the permissions to mute this member.'))
 
             if reason:
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.mute.guild.reason', '{success} Muted {muted} by {author}.\nReason: `{reason}`'), muted=ctx.author.mention, author=member.mention, reason=reason))
