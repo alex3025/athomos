@@ -25,28 +25,28 @@ class TopGG(commands.Cog):
 
 
     # Methods
-    async def post_server_count(self):
+    async def postServerCount(self):
         self.log.debug('<DBL> Attempting to post server count...')
         try:
             await self.dblpy.post_guild_count()
             self.log.info(f'<DBL> Server count posted!')
-        except dbl.errors.Forbidden:
+        except (dbl.errors.Forbidden, dbl.errors.HTTPException):
             self.log.error('<DBL> Failed to post the server count: No permissions.')
     
 
     # Events
     @commands.Cog.listener()
     async def on_ready(self):
-        await self.post_server_count()
+        await self.postServerCount()
 
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.post_server_count()
+        await self.postServerCount()
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.post_server_count()
+        await self.postServerCount()
 
 
 def setup(bot):

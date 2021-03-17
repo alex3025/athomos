@@ -14,25 +14,26 @@ class Database:
 
 
     def on_guild_join(self, guild):
-        self.db.insert_one({
-            'id': guild.id,
-            'prefix': '!',
-            'language': 'it_IT',
-            'messages': {
-                'join': {
-                    'message': None,
-                    'textChannel': None,
-                    'sendInDm': False
+        if self.db.find_one({'id': guild.id}) is None:
+            self.db.insert_one({
+                'id': guild.id,
+                'prefix': '!',
+                'language': 'it_IT',
+                'messages': {
+                    'join': {
+                        'message': None,
+                        'textChannel': None,
+                        'sendInDm': False
+                    },
+                    'leave': {
+                        'message': None,
+                        'textChannel': None
+                    }
                 },
-                'leave': {
-                    'message': None,
-                    'textChannel': None
-                }
-            },
-            'welcomeRoles': [],
-            'reportsChannel': None,
-            'customCommands': {}
-        })
+                'welcomeRoles': [],
+                'reportsChannel': None,
+                'customCommands': {}
+            })
 
 
     def add_missing_guilds(self, bot):
