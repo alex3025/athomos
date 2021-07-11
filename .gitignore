@@ -155,3 +155,7 @@ ffmpeg.exe
 start.bat
 config/settings.ini
 cogs/api.py
+<<<<<<< cf926e59b0c9778535677fd3a9d72646fb4aea0b
+=======
+config/lavalink_nodes.json
+>>>>>>> Modificato il .gitignore
