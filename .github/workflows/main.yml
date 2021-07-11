@@ -29,10 +29,12 @@ jobs:
       - name: Pull latest code from the repository
         run: |
           git pull
+        working-directory: /home/alex3025/athomos
       
       - name: Update libraries
         run: |
           pip3 install --upgrade -r requirements.txt
+        working-directory: /home/alex3025/athomos
       
       - name: Restart the bot
         run: 'sudo systemctl restart athomos'
