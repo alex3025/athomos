@@ -5,7 +5,7 @@ from discord.ext import menus, commands
 from utils.config import Config
 from utils.database import Database
 from utils.messages import Messages
-from utils.paginator import EmbedPaginator
+from utils.paginator import EmbedFieldsPaginator
 
 
 class CustomCommands(commands.Cog):
@@ -60,7 +60,7 @@ class CustomCommands(commands.Cog):
                 return await ctx.send(self.msg.get(ctx, 'customcommands.none', '{error} This server doesn\'t have any custom commands. You can add a new one with `{prefix}customcommands add <name> <text>`.'))
 
             e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.title', 'Custom commands:'))
-            pages = menus.MenuPages(source=EmbedPaginator(embed=e, fields=fields, ctx=ctx, per_page=10), clear_reactions_after=True)
+            pages = menus.MenuPages(source=EmbedFieldsPaginator(embed=e, fields=fields, ctx=ctx, per_page=10), clear_reactions_after=True)
             await pages.start(ctx)
 
 

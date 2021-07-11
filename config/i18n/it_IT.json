@@ -442,24 +442,34 @@
             "not_found": "{error} Nessun risultato trovato per: `{search}`.",
             "not_playing": "{error} Non sto riproducendo nulla!",
             "user_not_connected": "{error} Non sei connesso ad un canale vocale!",
-            "same_channel": "{error} Sono già connesso a quel canale vocale!"
+            "same_channel": "{error} Sono già connesso a quel canale vocale!",
+            "not_connected": "{error} Non sono connesso ad un canale vocale!"
         },
-        "now_playing": "**In riproduzione:** `{title}` richiesto da {requester}.",
+        "playing": {
+            "title": ":arrow_forward: In riproduzione:"
+        },
         "play": {
             "duration": "Durata:",
             "requester": "Richiesto da:",
             "song_title": "Titolo:",
-            "title": "{success} Canzone aggiunta alla coda! [{position}]",
-            "uploader": "Caricata da:"
+            "title": {
+                "single": "{success} Song added to the queue!",
+                "multi": "{success} Playlist added to the queue!"
+            },
+            "uploader": "Caricato da:"
         },
         "queue": {
-            "empty": "{error} La coda è vuota!",
-            "requester": "Richiesto da {requester}",
-            "title": "Coda musicale:"
+            "empty": "{error} Nessun brano in coda!",
+            "now_playing": {
+                "title": "In riproduzione:",
+                "entry": "{repeating} [{track_name}]({track_url}) | `{track_duration}` - Richiesto da {requester}"
+            },
+            "entry": "`{index}.` [{track_name}]({track_url}) | `{track_duration}` - Richiesto da {requester}",
+            "title": "Coda musicale di {guild_name}"
         },
         "remove": {
-            "cannot_remove_other": "{error} Puoi rimuovere le canzoni richieste da te.",
-            "removed": "{success} `{removed}` rimosso dalla coda."
+            "cannot_remove_other": "{error} Puoi rimuovere solo i brani richiesti da te.",
+            "removed": "{success} Il brano `{removed}` è stato rimosso dalla coda."
         },
         "skip": {
             "already_voted": "{error} Hai già votato per saltare questa canzone!",
@@ -481,6 +491,6 @@
         }
     },
     "paginator": {
-        "pages": "Pagina {current_page} su {all_pages}"
+        "pages": "Pagina {current_page} di {all_pages}"
     }
 }

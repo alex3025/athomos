@@ -6,7 +6,7 @@ from utils.logger import Logger
 from utils.config import Config
 from utils.database import Database
 from utils.messages import Messages
-
+from utils.context import no_reply
 
 class Mod(commands.Cog):
     """
@@ -171,6 +171,7 @@ class Mod(commands.Cog):
     @commands.command(name='announce', aliases=['broadcast', 'bc'])
     @commands.has_permissions(mention_everyone=True)
     @commands.bot_has_permissions(mention_everyone=True)
+    @commands.check(no_reply)
     async def _announce(self, ctx, *, message):
         """
         Allows to send a message in all the channels of the server where the bot can write.
@@ -182,8 +183,6 @@ class Mod(commands.Cog):
             await ctx.send(embed=e)
         except:
             pass
-        finally:
-            await ctx.message.add_reaction('<:athomos_success:600278477421281280>')
 
 
     @commands.group(name='report', invoke_without_command=True)
