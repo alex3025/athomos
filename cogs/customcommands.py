@@ -38,7 +38,7 @@ class CustomCommands(commands.Cog):
             try:
                 customCommands = self.db.find_one({'id': message.guild.id})['customCommands']
                 for customCommand in customCommands:
-                    if customCommand == message.content.replace(list(await self.bot.get_prefix(message))[-1], ''):
+                    if list(await self.bot.get_prefix(message))[-1] + customCommand == message.content:
                         if customCommands[customCommand]['type'] == 'text':
                             return await message.channel.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(message)))
                         # elif customCommand['type'] == 'role':
