@@ -151,6 +151,7 @@ Thumbs.db #thumbnail cache on Windows
 
 ### custom files ###
 *.log
+ffmpeg.exe
 start.bat
 config/settings.ini
 config/lavalink_nodes.json
