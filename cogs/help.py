@@ -58,10 +58,9 @@ class BotHelp(commands.DefaultHelpCommand):
         ctx = self.context
         qualified_name = [command.cog.qualified_name for command in commands][0]
 
+        name = '» ' + msg.get(ctx, 'cog_names.' + qualified_name.lower(), heading)
         if heading == msg.get(ctx, 'help.headings.subcommands', 'Subcommands:') or heading == msg.get(ctx, 'help.headings.commands', 'Commands:'):
             name = heading
-        elif msg.get(ctx, 'cog_names.' + qualified_name.lower(), '') != '':
-            name = '» ' + msg.get(ctx, 'cog_names.' + qualified_name.lower(), heading)
 
         self.paginator.add_line(line=', '.join(['`' + self.shorten_text(f'{self.clean_prefix}{command.qualified_name}') + '`' for command in commands]), name=name)
 

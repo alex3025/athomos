@@ -1,6 +1,7 @@
 import json
 import discord
 from discord.ext import commands
+from functools import cached_property
 
 from .logger import Logger
 from .database import Database

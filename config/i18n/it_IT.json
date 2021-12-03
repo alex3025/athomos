@@ -98,7 +98,7 @@
         "admin": "Amministrazione :wrench:",
         "customcommands": "Comandi personalizzati :pencil:",
         "mod": "Moderazione :hammer_pick:",
-        "music": "Musica :headphones:",
+        "radio": "**[BETA]** Radio (Edizione Natalizia) :christmas_tree:",
         "support": "Supporto :question:"
     },
     "command_arguments": {
@@ -441,6 +441,7 @@
             "bot_already_connect": "{error} Sono già connesso ad un canale vocale!",
             "not_found": "{error} Nessun risultato trovato per: `{search}`.",
             "not_playing": "{error} Non sto riproducendo nulla!",
+            "not_connected": "{error} Non sono connesso ad un canale vocale!",
             "user_not_connected": "{error} Non sei connesso ad un canale vocale!",
             "same_channel": "{error} Sono già connesso a quel canale vocale!",
             "not_connected": "{error} Non sono connesso ad un canale vocale!"

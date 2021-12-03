@@ -2,7 +2,5 @@ discord.py[voice]
 git+https://github.com/Rapptz/discord-ext-menus
 topggpy
 colorlog
-youtube_dl
 colorama
 pymongo
-dnspython
