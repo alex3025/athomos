@@ -17,6 +17,11 @@ class Radio(commands.Cog):
         self.log = Logger()
         self.msg = Messages()
 
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        if before.channel is not None and member.guild.voice_client:
+            if before.channel == member.guild.voice_client.channel and len(before.channel.members) == 1:
+                await member.guild.voice_client.disconnect()
 
     @commands.command(name='connect', aliases=['play'])
     async def cmd_connect(self, ctx):

@@ -22,6 +22,7 @@ class Bot(commands.Bot):
         # Intents for members events and count
         intents = discord.Intents.default()
         intents.members = True
+        intents.voice_states = True
 
         super().__init__(command_prefix=self.get_guild_prefix, case_insensitive=True, intents=intents)
 
