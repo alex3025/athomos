@@ -21,31 +21,31 @@ class TopGG(commands.Cog):
             finally:    
                 return
 
-        self.topGG = topgg.DBLClient(self.bot, self.config.topGG_token)
+        self.topgg = topgg.DBLClient(self.bot, self.config.topGG_token)
 
 
     # Methods
-    async def post_server_count(self):
-        self.log.debug('<DBL> Attempting to post server count...')
+    async def postServerCount(self):
+        self.log.debug('<TopGG> Attempting to post server count...')
         try:
-            await self.topGG.post_guild_count()
-            self.log.info(f'<DBL> Server count posted!')
-        except topgg.errors.Forbidden:
-            self.log.error('<DBL> Failed to post the server count: No permissions.')
+            await self.topgg.post_guild_count()
+            self.log.info(f'<TopGG> Server count posted!')
+        except (topgg.errors.Forbidden, topgg.errors.HTTPException):
+            self.log.error('<TopGG> Failed to post the server count: No permissions.')
     
 
     # Events
     @commands.Cog.listener()
     async def on_ready(self):
-        await self.post_server_count()
+        await self.postServerCount()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.post_server_count()
+        await self.postServerCount()
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.post_server_count()
+        await self.postServerCount()
 
 
 def setup(bot):

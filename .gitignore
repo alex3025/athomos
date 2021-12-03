@@ -150,9 +150,10 @@ Thumbs.db #thumbnail cache on Windows
 *.code-workspace
 
 ### custom files ###
-ffmpeg.exe
 *.log
+ffmpeg.exe
 start.bat
 config/settings.ini
+config/lavalink_nodes.json
 cogs/api.py
 config/lavalink_nodes.json

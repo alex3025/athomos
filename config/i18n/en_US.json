@@ -365,7 +365,9 @@
             "errors": {
                 "already_muted": "{error} This user is already muted!",
                 "cannot_mute_this_member": "{error} You cannot mute this member!",
-                "missing_permissions": "{error} You don't have the permissions to mute this member."
+                "missing_permissions": "{error} You don't have the permissions to mute this member.",
+                "bot_missing_permissions": "{error} I don't have the permissions to mute this member.",
+                "cannot_set_permissions": "{error} There was an error when configuring the muted role, try to check the hierarchy of the bot role. **The command may not work correctly.**"
             },
             "guild": {
                 "no_reason": "{success} {muted} was muted by {author}.",
@@ -436,27 +438,37 @@
     "music": {
         "errors": {
             "bot_already_connect": "{error} I'm already connected to a voice channel!",
-            "not_found": "{error} No results found for: `{search}`.",
+            "not_found": "{error} No results found!",
             "not_playing": "{error} I'm not playing anything.",
             "user_not_connected": "{error} You aren't connected to a voice channel!",
-            "same_channel": "{error} I'm already connected to that channel!"
+            "same_channel": "{error} I'm already connected to that channel!",
+            "not_connected": "{error} I'm not connected to a voice channel!"
         },
-        "now_playing": "**Now playing:** `{title}` requested by {requester}.",
+        "playing": {
+            "title": ":arrow_forward: Now playing:"
+        },
         "play": {
             "duration": "Duration:",
             "requester": "Requested by:",
             "song_title": "Title:",
-            "title": "{success} Song added to the queue! [{position}]",
+            "title": {
+                "single": "{success} Song added to the queue!",
+                "multi": "{success} Playlist added to the queue!"
+            },
             "uploader": "Uploaded by:"
         },
         "queue": {
-            "empty": "{error} The queue is empty.",
-            "requester": "Requested by {requester}",
-            "title": "Music Queue:"
+            "empty": "{error} The queue is empty!",
+            "now_playing": {
+                "title": "Now playing:",
+                "entry": "{repeating} [{track_name}]({track_url}) | `{track_duration}` - Requested by {requester}"
+            },
+            "entry": "`{index}.` [{track_name}]({track_url}) | `{track_duration}` - Requested by {requester}",
+            "title": "Queue for {guild_name}:"
         },
         "remove": {
             "cannot_remove_other": "{error} You can remove only songs requested by you.",
-            "removed": "{success} Removed `{removed}` from queue."
+            "removed": "{success} Removed `{removed}` from the queue."
         },
         "skip": {
             "already_voted": "{error} You have already voted to skip this song",

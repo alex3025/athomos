@@ -15,7 +15,7 @@ class ErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        ignored = (commands.CommandNotFound, commands.NoPrivateMessage)
+        ignored = (commands.CommandNotFound, commands.NoPrivateMessage, commands.CheckFailure)
         error = getattr(error, 'original', error)
 
         if isinstance(error, ignored):

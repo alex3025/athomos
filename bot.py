@@ -10,6 +10,8 @@ from utils.config import Config
 from utils.database import Database
 from utils.logger import Logger
 from utils.messages import Messages
+from utils.context import CustomContext
+
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -21,7 +23,7 @@ class Bot(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True
 
-        super().__init__(command_prefix=self.get_custom_prefix, case_insensitive=True, intents=intents)
+        super().__init__(command_prefix=self.get_guild_prefix, case_insensitive=True, intents=intents)
 
         self.config = Config()
         self.log = Logger()
@@ -34,17 +36,21 @@ class Bot(commands.Bot):
             (self.msg.get(ctx, 'help.links.donate', 'Donate'), 'https://patreon.com/alex3025')
         ]
 
+        self.lastStats = ''
+
         self.load_modules()
         self.init()
 
-
-    async def get_custom_prefix(self, bot, message):
+    async def get_guild_prefix(self, bot, message):
         if not message.guild:
             return
         return commands.when_mentioned_or(self.db.db.find_one({'id': message.guild.id})['prefix'])(bot, message)
 
+    async def on_message(self, message):
+        ctx = await self.get_context(message, cls=CustomContext)
+        await self.invoke(ctx)
 
-    @tasks.loop(minutes=10.0)
+    @tasks.loop(minutes=15.0)
     async def update_stats(self):
         self.log.debug('Updating bot\'s presence...')
 
@@ -53,9 +59,11 @@ class Bot(commands.Bot):
 
         # Status message
         stats = f'{round_(len(self.guilds))} {"Server" if len(self.guilds) == 1 else "Servers"} | {round_(len(self.users))} {"Utente" if len(self.users) == 1 else "Utenti"}'
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=stats))
-        self.log.debug('Presence updated.')
-
+        if stats != self.lastStats:  # Update stats only if something changed
+            await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=stats))
+            self.log.debug('Presence updated.')
+        else:
+            self.lastStats = stats
 
     async def on_ready(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -70,14 +78,12 @@ class Bot(commands.Bot):
         self.update_stats.start()
         self.db.add_missing_guilds(self)
 
-
     async def on_resumed(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         print(open('logo.txt', 'r').read() + '\n')
         self.log.info('Bot resumed and connected to discord!')
         self.log.info(f'Logged with: {self.user.name} (ID: {self.user.id})\n')
         self.update_stats.restart()
-
 
     def load_modules(self):
         basePath = Path('cogs')
@@ -92,7 +98,6 @@ class Bot(commands.Bot):
                     self.log.exception(f'Cannot load "{ext}" extension!')
 
         self.log.info('Extensions loaded!')
-
 
     def init(self):
         try:

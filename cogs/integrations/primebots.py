@@ -26,7 +26,7 @@ class PrimeBots(commands.Cog):
 
 
     # Methods
-    async def updateServerCount(self):
+    async def postServerCount(self):
         self.log.debug('<PrimeBots> Attempting to post server count...')
         try:
             async with aiohttp.ClientSession() as session:
@@ -43,15 +43,15 @@ class PrimeBots(commands.Cog):
     # Events
     @commands.Cog.listener()
     async def on_ready(self):
-        await self.updateServerCount()
+        await self.postServerCount()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.updateServerCount()
+        await self.postServerCount()
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.updateServerCount()
+        await self.postServerCount()
 
 
 def setup(bot):

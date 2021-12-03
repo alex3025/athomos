@@ -1,12 +1,11 @@
-import json
+
 import discord
-from discord.ext import menus
-from discord.ext import commands
+from discord.ext import menus, commands
 
 from utils.config import Config
 from utils.database import Database
 from utils.messages import Messages
-from utils.paginator import EmbedPaginator
+from utils.paginator import EmbedFieldsPaginator
 
 
 class CustomCommands(commands.Cog):
@@ -36,13 +35,16 @@ class CustomCommands(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.author == self.bot.user and message.guild:
-            customCommands = self.db.find_one({'id': message.guild.id})['customCommands']
-            for customCommand in customCommands:
-                if customCommand == message.content.replace(list(await self.bot.get_prefix(message))[-1], ''):
-                    if customCommands[customCommand]['type'] == 'text':
-                        return await message.channel.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(message)))
-                    # elif customCommand['type'] == 'role':
-                    #     await message.author.add_roles(customCommand['data'], reason=f'Added by customcommand: {message.content}')
+            try:
+                customCommands = self.db.find_one({'id': message.guild.id})['customCommands']
+                for customCommand in customCommands:
+                    if list(await self.bot.get_prefix(message))[-1] + customCommand == message.content:
+                        if customCommands[customCommand]['type'] == 'text':
+                            return await message.channel.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(message)))
+                        # elif customCommand['type'] == 'role':
+                        #     await message.author.add_roles(customCommand['data'], reason=f'Added by customcommand: {message.content}')
+            except TypeError:
+                pass
 
 
     # Commands
@@ -58,7 +60,7 @@ class CustomCommands(commands.Cog):
                 return await ctx.send(self.msg.get(ctx, 'customcommands.none', '{error} This server doesn\'t have any custom commands. You can add a new one with `{prefix}customcommands add <name> <text>`.'))
 
             e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.title', 'Custom commands:'))
-            pages = menus.MenuPages(source=EmbedPaginator(embed=e, fields=fields, ctx=ctx, per_page=10), clear_reactions_after=True)
+            pages = menus.MenuPages(source=EmbedFieldsPaginator(embed=e, fields=fields, ctx=ctx, per_page=10), clear_reactions_after=True)
             await pages.start(ctx)
 
 

@@ -155,7 +155,7 @@ class BotHelp(commands.DefaultHelpCommand):
             self.add_indented_commands(bot_commands, heading=category, max_size=max_size)
 
         if bot.help_links(ctx):
-            self.paginator.add_line(' | '.join([f"[{name}]({link})" for name, link in bot.help_links(ctx)]), '\u200b\n» ' + msg.get(ctx, 'help.links.title', 'Links'))
+            self.paginator.add_line(' | '.join([f"[{name}]({link})" for name, link in bot.help_links(ctx)]), '\u200b\n» ' + msg.get(ctx, 'help.links.title', 'Links :pushpin:'))
 
         note = self.get_ending_note()
         if note:
@@ -227,9 +227,8 @@ class Support(commands.Cog):
         self.bot = bot
 
         self._original_help_command = self.bot.help_command
-        self.bot.help_command = BotHelp(paginator=EmbedPaginator())
+        self.bot.help_command = BotHelp(paginator=EmbedPaginator(), verify_checks=False)
         self.bot.help_command.cog = self
-    
 
     # Functions
     async def intro(self, ctx):
@@ -238,21 +237,35 @@ class Support(commands.Cog):
         e.set_footer(text=msg.get(ctx, 'help.intro.footer', 'To start using me, do {prefix}help and see all the available commands.'))
         await ctx.send(embed=e)
 
-
     # Events
     @commands.Cog.listener()
     async def on_message(self, message):
         if self.bot.user in message.mentions and message.content.replace('!', '').replace(str(self.bot.user.mention), '') == '':
             await self.intro(await self.bot.get_context(message))
-    
 
     # Commands
     @commands.command(name='intro')
-    async def _intro(self, ctx):
+    async def cmd_intro(self, ctx):
         """
         Shows the introduction message.
         """
         await self.intro(ctx)
+    
+    # @commands.command(name='info', aliases=['changelog'])
+    # async def cmd_info(self, ctx):
+    #     """
+    #     Shows some useful information about the bot.
+    #     """
+    #     e = discord.Embed(colour=Config().embeds_color, title=msg.format(msg.get(ctx, 'help.info.title', 'About {name}'), name=self.bot.user.name))
+    #     e.set_thumbnail(url=self.bot.user.avatar_url)
+
+    #     announcements_channel = self.bot.get_channel(Config().announcements_channel)
+    #     latest_news_raw = await announcements_channel.fetch_message(announcements_channel.last_message_id)
+    #     latest_news = latest_news_raw.clean_content.replace('@here', '').replace('@everyone', '')
+    #     e.add_field(name=msg.get(ctx, 'help.info.latest_news', 'Latest news:'), value=(
+    #         latest_news[:512] + '... [Continua a leggere](https://discord.gg/ptXUqzU6aF)') if len(latest_news) > 75 else latest_news)
+
+    #     await ctx.send(embed=e)
 
 
 def setup(bot):

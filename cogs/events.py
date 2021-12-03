@@ -5,6 +5,7 @@ from utils.logger import Logger
 from utils.database import Database
 from utils.messages import Messages
 
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -12,7 +13,6 @@ class Events(commands.Cog):
         self.log = Logger()
         self.msg = Messages()
         self.db = Database()
-
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -47,11 +47,9 @@ class Events(commands.Cog):
         self.db.on_guild_join(guild)
         self.log.debug(f'Joined in a guild: {guild.name} (ID: {guild.id})')
 
-
     # @commands.Cog.listener()
     # async def on_guild_remove(self, guild):
     #     self.log.debug(f'Removed from a guild: {guild.name} (ID: {guild.id})')
-
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -78,7 +76,6 @@ class Events(commands.Cog):
                 except:
                     pass
 
-
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         # Leave Message
@@ -89,7 +86,6 @@ class Events(commands.Cog):
                 await channel.send(leaveMessage['message'].format_map(self.msg.placeholders(member)))
             except KeyError:
                 pass
-
 
 def setup(bot):
     bot.add_cog(Events(bot))

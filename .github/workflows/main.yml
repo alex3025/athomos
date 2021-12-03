@@ -28,13 +28,13 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Pull latest code from the repository
         run: |
-          cd /home/alex3025/athomos
           git pull
+        working-directory: /home/alex3025/athomos
       
       - name: Update libraries
         run: |
-          cd /home/alex3025/athomos
           pip3 install --upgrade -r requirements.txt
+        working-directory: /home/alex3025/athomos
       
       - name: Restart the bot
         run: 'sudo systemctl restart athomos'
