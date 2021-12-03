@@ -49,6 +49,9 @@ class ErrorHandler(commands.Cog):
 
         elif isinstance(error, commands.NotOwner):
             return await ctx.send(self.msg.get(ctx, 'errors.owner_only', '{error} This command can be **executed only** by the bot owner!'))
+        
+        elif isinstance(error, commands.CommandError):  # General error handling with `raise commands.CommandError(text)`
+            return await ctx.send(error)
 
         else:
             self.log.error('Ignoring exception in command {}:'.format(ctx.command))

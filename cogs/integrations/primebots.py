@@ -45,7 +45,6 @@ class PrimeBots(commands.Cog):
     async def on_ready(self):
         await self.updateServerCount()
 
-
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         await self.updateServerCount()

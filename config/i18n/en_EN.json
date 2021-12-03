@@ -98,7 +98,7 @@
         "admin": "Administration :wrench:",
         "customcommands": "Custom commands :pencil:",
         "mod": "Moderation :hammer_pick:",
-        "music": "Music :headphones:",
+        "radio": "**[BETA]** Radio (Christmas Edition) :christmas_tree:",
         "support": "Support :question:"
     },
     "command_arguments": {

@@ -33,9 +33,9 @@ class Config:
         self.embeds_color = int(self.parser.get('Misc', 'embedsColor', fallback='14B5EF'), 16)
         self.announcements_channel = self.parser.getint('Misc', 'announcementsChannel')
 
-        # Load lavalink_nodes.json
-        with open('config/lavalink_nodes.json') as ln:
-            self.lavalink_nodes = json.load(ln)
+        # # Load lavalink_nodes.json
+        # with open('config/lavalink_nodes.json') as ln:
+        #     self.lavalink_nodes = json.load(ln)
 
 
     def short(self, value):

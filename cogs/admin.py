@@ -1,6 +1,5 @@
 import os
 import discord
-import sqlalchemy
 from discord.ext import commands
 
 from utils.config import Config

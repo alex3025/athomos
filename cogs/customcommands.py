@@ -1,6 +1,5 @@
 import json
 import discord
-import sqlalchemy
 from discord.ext import menus
 from discord.ext import commands
 

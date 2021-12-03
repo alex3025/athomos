@@ -1,4 +1,4 @@
-import dbl
+import topgg
 from discord.ext import commands
 
 from utils.logger import Logger
@@ -21,16 +21,16 @@ class TopGG(commands.Cog):
             finally:    
                 return
 
-        self.dblpy = dbl.DBLClient(self.bot, self.config.topGG_token)
+        self.topGG = topgg.DBLClient(self.bot, self.config.topGG_token)
 
 
     # Methods
     async def post_server_count(self):
         self.log.debug('<DBL> Attempting to post server count...')
         try:
-            await self.dblpy.post_guild_count()
+            await self.topGG.post_guild_count()
             self.log.info(f'<DBL> Server count posted!')
-        except dbl.errors.Forbidden:
+        except topgg.errors.Forbidden:
             self.log.error('<DBL> Failed to post the server count: No permissions.')
     
 
@@ -38,7 +38,6 @@ class TopGG(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         await self.post_server_count()
-
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
