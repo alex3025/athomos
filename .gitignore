@@ -156,4 +156,5 @@ start.bat
 config/settings.ini
 config/lavalink_nodes.json
 cogs/api.py
+cogs/radio.py
 config/lavalink_nodes.json
