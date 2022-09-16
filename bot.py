@@ -23,11 +23,9 @@ class Bot(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True
         intents.voice_states = True
-        intents.message_content = True
+        # intents.message_content = True
 
         super().__init__(command_prefix=self.get_guild_prefix, case_insensitive=True, intents=intents)
-
-        # self.cmds = discord.app_commands.CommandTree(self, fallback_to_global=True)
 
         self.config = Config()
         self.log = Logger()
@@ -84,7 +82,7 @@ class Bot(commands.Bot):
         self.update_stats.start()
         self.db.add_missing_guilds(self)
 
-        guildd = self.get_guild(379704537486721025)
+        # guildd = self.get_guild(379704537486721025)
         await self.tree.sync()
 
     async def on_resumed(self):
