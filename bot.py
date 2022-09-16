@@ -23,8 +23,11 @@ class Bot(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True
         intents.voice_states = True
+        intents.message_content = True
 
         super().__init__(command_prefix=self.get_guild_prefix, case_insensitive=True, intents=intents)
+
+        # self.cmds = discord.app_commands.CommandTree(self, fallback_to_global=True)
 
         self.config = Config()
         self.log = Logger()
@@ -39,7 +42,7 @@ class Bot(commands.Bot):
 
         self.lastStats = ''
 
-        self.load_modules()
+        # self.load_modules()
         self.init()
 
     async def get_guild_prefix(self, bot, message):
@@ -47,9 +50,9 @@ class Bot(commands.Bot):
             return
         return commands.when_mentioned_or(self.db.db.find_one({'id': message.guild.id})['prefix'])(bot, message)
 
-    async def on_message(self, message):
-        ctx = await self.get_context(message, cls=CustomContext)
-        await self.invoke(ctx)
+    # async def on_message(self, message):
+    #     ctx = await self.get_context(message, cls=CustomContext)
+    #     await self.invoke(ctx)
 
     @tasks.loop(minutes=15.0)
     async def update_stats(self):
@@ -67,6 +70,8 @@ class Bot(commands.Bot):
             self.lastStats = stats
 
     async def on_ready(self):
+        await self.load_modules()
+
         os.system('cls' if os.name == 'nt' else 'clear')
         print(open('logo.txt', 'r').read() + '\n')
 
@@ -79,6 +84,9 @@ class Bot(commands.Bot):
         self.update_stats.start()
         self.db.add_missing_guilds(self)
 
+        guildd = self.get_guild(379704537486721025)
+        await self.tree.sync()
+
     async def on_resumed(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         print(open('logo.txt', 'r').read() + '\n')
@@ -86,14 +94,14 @@ class Bot(commands.Bot):
         self.log.info(f'Logged with: {self.user.name} (ID: {self.user.id})\n')
         self.update_stats.restart()
 
-    def load_modules(self):
+    async def load_modules(self):
         basePath = Path('cogs')
         for file in basePath.rglob("*"):
             directory = file.relative_to(basePath.parent)
             if '__pycache__' not in file.parts and directory.is_file():
                 ext = directory.as_posix().replace('/', '.').replace('.py', '')
                 try:
-                    self.load_extension(ext)
+                    await self.load_extension(ext)
                     self.log.debug(f'Extension "{ext}" loaded!')
                 except commands.ExtensionError:
                     self.log.exception(f'Cannot load "{ext}" extension!')

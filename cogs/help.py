@@ -244,7 +244,7 @@ class Support(commands.Cog):
             await self.intro(await self.bot.get_context(message))
 
     # Commands
-    @commands.command(name='intro')
+    @commands.hybrid_command(name='intro')
     async def cmd_intro(self, ctx):
         """
         Shows the introduction message.
@@ -268,5 +268,5 @@ class Support(commands.Cog):
     #     await ctx.send(embed=e)
 
 
-def setup(bot):
-    bot.add_cog(Support(bot))
+async def setup(bot):
+    await bot.add_cog(Support(bot))

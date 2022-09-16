@@ -22,7 +22,7 @@ class Mod(commands.Cog):
         self.log = Logger()
 
 
-    @commands.command(name='ban')
+    @commands.hybrid_command(name='ban')
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def _ban(self, ctx, member: discord.Member, *, reason=None):
@@ -48,7 +48,7 @@ class Mod(commands.Cog):
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.ban.guild.no_reason', '{success} Banned {banned} from this server.'), banned=member.mention))
 
 
-    @commands.command(name='unban')
+    @commands.hybrid_command(name='unban')
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def _unban(self, ctx, user: str, *, reason=None):
@@ -68,7 +68,7 @@ class Mod(commands.Cog):
             await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.unban.errors.user_not_found', '{error} Banned user `{user}` not found.'), user=user))
 
 
-    @commands.command(name='kick')
+    @commands.hybrid_command(name='kick')
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(kick_members=True)
     async def _kick(self, ctx, member: discord.Member, *, reason=None):
@@ -94,7 +94,7 @@ class Mod(commands.Cog):
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.kick.guild.no_reason', '{success} Kicked {kicked} from this server.'), kicked=member.mention))
 
 
-    @commands.command(name='mute')
+    @commands.hybrid_command(name='mute')
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def _mute(self, ctx, member: discord.Member, *, reason=None):
@@ -130,7 +130,7 @@ class Mod(commands.Cog):
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.mute.guild.no_reason', '{success} {muted} was muted by {author}.'), muted=member.mention, author=ctx.author.mention))
 
 
-    @commands.command(name='unmute')
+    @commands.hybrid_command(name='unmute')
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def _unmute(self, ctx, member: discord.Member, *, reason=None):
@@ -150,7 +150,7 @@ class Mod(commands.Cog):
             await ctx.send(self.msg.get(ctx, 'mod.mute.errors.not_muted', '{error} This user isn\'t muted!'))
 
 
-    @commands.command(name='nickname', aliases=['nick'])
+    @commands.hybrid_command(name='nickname')
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(manage_nicknames=True)
     async def _nickname(self, ctx, member: discord.Member, *, nickname=None):
@@ -168,7 +168,7 @@ class Mod(commands.Cog):
             await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.nickname.removed', '{success} You removed the nickname of **{user}**.'), user=member.name))
 
 
-    @commands.command(name='announce', aliases=['broadcast', 'bc'])
+    @commands.hybrid_command(name='announce')
     @commands.has_permissions(mention_everyone=True)
     @commands.bot_has_permissions(mention_everyone=True)
     @commands.check(no_reply)
@@ -185,7 +185,7 @@ class Mod(commands.Cog):
             pass
 
 
-    @commands.group(name='report', invoke_without_command=True)
+    @commands.hybrid_group(fallback='member', name='report')
     async def _report(self, ctx, member: discord.Member, *, reason):
         """
         Allows you to report a member.
@@ -234,7 +234,7 @@ class Mod(commands.Cog):
             await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.report.set.new', '{success} **Reports channel configured!** All new reports will be sent to {channel}.'), channel=channel))
 
 
-    @_report.command(name='disable', aliases=['unset'])
+    @_report.command(name='disable')
     @commands.has_permissions(manage_guild=True)
     async def _report_disable(self, ctx):
         """
@@ -248,7 +248,7 @@ class Mod(commands.Cog):
             await ctx.send(self.msg.get(ctx, 'mod.report.errors.channel_not_set.full', '{error} **Reports channel not set!** You can set it with: `{prefix}report set <channel>`.'))
 
 
-    @commands.command(name='ping', aliases=['latency'])
+    @commands.hybrid_command(name='ping')
     async def _ping(self, ctx):
         """
         It allows you to control the latency (ping) of the bot.
@@ -282,7 +282,7 @@ class Mod(commands.Cog):
 
         await ctx.send(self.msg.format(self.msg.get(ctx, 'mod.clean.cleaned', '{success} Removed **{deleted}** messages.'), deleted=len(deleted)), delete_after=10)
 
-    @commands.group(name='clean', aliases=['clear'], invoke_without_command=True)
+    @commands.hybrid_group(name='clean', fallback='messages')
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
     async def _clean(self, ctx, limit: int=25):
@@ -294,7 +294,7 @@ class Mod(commands.Cog):
         if ctx.invoked_subcommand is None:
             await self.purge(ctx, limit)
 
-    @_clean.command(name='commands', aliases=['bot', 'command'])
+    @_clean.command(name='commands')
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
     async def _clean_commands(self, ctx, limit: int=25):
@@ -340,5 +340,5 @@ class Mod(commands.Cog):
             await ctx.send(self.msg.get(ctx, 'mod.nickname.errors.missing_permissions', '{error} You don\'t have the permissions to change the nickname to this member.'))
 
 
-def setup(bot):
-    bot.add_cog(Mod(bot))
+async def setup(bot):
+    await bot.add_cog(Mod(bot))

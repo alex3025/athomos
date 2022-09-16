@@ -34,7 +34,7 @@ class Admin(commands.Cog):
 
 
     # Commands
-    @commands.group(name='settings', aliases=['setting'])
+    @commands.hybrid_group(name='settings', fallback='list')
     async def _settings(self, ctx):
         """
         Allows you to manage the bot settings.
@@ -56,7 +56,7 @@ class Admin(commands.Cog):
             self.db.update_one({'id': ctx.guild.id}, {'$set': {'prefix': prefix}})
             await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.updated', '{success} **Prefix updated!** Now the prefix is: `{prefix}`'))
 
-    @_settings.command(name='language', aliases=['lang', 'locale'])
+    @_settings.command(name='language')
     @commands.is_owner()  # Currently disabled for the public
     @commands.bot_has_permissions(manage_roles=True)
     async def _language(self, ctx, *, language=None):
@@ -100,7 +100,7 @@ class Admin(commands.Cog):
             else:
                 await ctx.send(self.msg.format(self.msg.get(ctx, 'admin.settings.language.updated', '{success} **Language updated!** Now the bot\'s language for this server is: **{language}**'), language=new_lang_name))
 
-    @_settings.group(name='messages', aliases=['msg', 'message'])
+    @commands.hybrid_group(name='messages')
     async def _messages(self, ctx):
         """
         Allows you to manage the settings for join and leave messages.
@@ -124,7 +124,7 @@ class Admin(commands.Cog):
 
             await ctx.send(embed=e)
 
-    @_messages.command(name='placeholders', aliases=['ph'])
+    @_messages.command(name='placeholders')
     async def _messages_placeholders(self, ctx):
         """
         Shows placeholders that can be used to customize join, leave, and custom commands.
@@ -142,7 +142,7 @@ class Admin(commands.Cog):
 
         await ctx.send(embed=e)
 
-    @_messages.group(name='join', invoke_without_command=True, case_insensitive=True)
+    @commands.hybrid_group(name='joinmessage', fallback='set')
     async def _messages_join(self, ctx, *, welcome_message):
         """
         Allows you to configure the join message.
@@ -163,7 +163,7 @@ class Admin(commands.Cog):
 
             await ctx.command.parent(ctx)
 
-    @_messages_join.command(name='channel', aliases=['textchannel'])
+    @_messages_join.command(name='channel')
     async def _messages_join_textChannel(self, ctx, text_channel: discord.TextChannel=None):
         """
         Allows you to set or modify the text channel where the join messages will be sent.
@@ -177,7 +177,7 @@ class Admin(commands.Cog):
 
         await ctx.command.parent.parent(ctx)
 
-    @_messages_join.command(name='sendInDm')
+    @_messages_join.command(name='send-in-dm')
     async def _messages_join_sendInDm(self, ctx):
         """
         Allows you to choose whether to send the welcome message in DMs or in a text channel.
@@ -198,7 +198,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.errors.disabled', '{error} **Welcome message isn\'t configured!** You can set it with: `{prefix}settings messages join [welcome message]`'))
 
-    @_messages_join.command(name='remove', aliases=['clear', 'delete'])
+    @_messages_join.command(name='remove')
     async def _messages_join_remove(self, ctx):
         """
         Allows you to remove the join message.
@@ -211,7 +211,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.join.errors.disabled', '{error} **Welcome message isn\'t configured!** You can set it with: `{prefix}settings messages join [welcome message]`'))
 
-    @_messages.group(name='leave', invoke_without_command=True, case_insensitive=True)
+    @commands.hybrid_group(name='leavemessage', fallback='set')
     async def _messages_leave(self, ctx, *, leave_message):
         """
         Allows you to configure the leave message.
@@ -260,7 +260,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(self.msg.get(ctx, 'admin.settings.messages.leave.errors.disabled', '{error} **Leave message isn\'t configured!** You can set it with: `{prefix}settings messages leave [leave message]`'))
 
-    @_settings.group(name='joinroles', aliases=['joinrole', 'jr'], invoke_without_command=True)
+    @commands.hybrid_group(name='joinroles', fallback='list')
     async def _joinroles(self, ctx):
         """
         Allows you to configure the roles that will be given when a new user joins the server.
@@ -276,7 +276,7 @@ class Admin(commands.Cog):
                 await ctx.send(self.msg.get(ctx, 'admin.settings.joinroles.errors.disabled', '{error} **Welcome roles are\'t configured!** You can set them with: `{prefix}setting joinroles add <role(s)>`'))
 
     @_joinroles.command(name='add')
-    async def _joinroles_add(self, ctx, *roles: discord.Role):
+    async def _joinroles_add(self, ctx, *, roles: discord.Role):
         """
         Allows you to add one or more roles to the list of joinroles.
         """
@@ -307,8 +307,8 @@ class Admin(commands.Cog):
 
             await ctx.send(message)
 
-    @_joinroles.command(name='remove', aliases=['rm'])
-    async def _joinroles_remove(self, ctx, *roles: discord.Role):
+    @_joinroles.command(name='remove')
+    async def _joinroles_remove(self, ctx, *, roles: discord.Role):
         """
         Allows you to remove one or more roles from the list of joinroles.
         """
@@ -339,5 +339,5 @@ class Admin(commands.Cog):
             await ctx.send(message)
 
 
-def setup(bot):
-    bot.add_cog(Admin(bot))
+async def setup(bot):
+    await bot.add_cog(Admin(bot))

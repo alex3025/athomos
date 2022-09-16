@@ -48,5 +48,5 @@ class TopGG(commands.Cog):
         await self.postServerCount()
 
 
-def setup(bot):
-    bot.add_cog(TopGG(bot))
+async def setup(bot):
+    await bot.add_cog(TopGG(bot))

@@ -32,23 +32,39 @@ class CustomCommands(commands.Cog):
         return True
 
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if not message.author == self.bot.user and message.guild:
-            try:
-                customCommands = self.db.find_one({'id': message.guild.id})['customCommands']
-                for customCommand in customCommands:
-                    if list(await self.bot.get_prefix(message))[-1] + customCommand == message.content:
-                        if customCommands[customCommand]['type'] == 'text':
-                            return await message.channel.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(message)))
-                        # elif customCommand['type'] == 'role':
-                        #     await message.author.add_roles(customCommand['data'], reason=f'Added by customcommand: {message.content}')
-            except TypeError:
-                pass
-
+    # @commands.Cog.listener()
+    # async def on_message(self, message):
+    #     if not message.author == self.bot.user and message.guild:
+    #         try:
+    #             customCommands = self.db.find_one({'id': message.guild.id})['customCommands']
+    #             for customCommand in customCommands:
+    #                 if list(await self.bot.get_prefix(message))[-1] + customCommand == message.content:
+    #                     if customCommands[customCommand]['type'] == 'text':
+    #                         return await message.channel.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(message)))
+    #                     # elif customCommand['type'] == 'role':
+    #                     #     await message.author.add_roles(customCommand['data'], reason=f'Added by customcommand: {message.content}')
+    #         except TypeError:
+    #             pass
+    
+    @commands.hybrid_command(name='cc')
+    async def _customcommands_invoke(self, ctx, command: str):
+        """
+        Runs a custom command
+        """
+        try:
+            customCommands = self.db.find_one({'id': ctx.guild.id})['customCommands']
+            for customCommand in customCommands:
+                if customCommand == command:
+                    if customCommands[customCommand]['type'] == 'text':
+                        return await ctx.send(customCommands[customCommand]['data'].format_map(self.msg.placeholders(ctx.author)))
+                    # elif customCommand['type'] == 'role':
+                    #     await message.author.add_roles(customCommand['data'], reason=f'Added by customcommand: {message.content}')
+        except TypeError:
+            pass
+        await ctx.send('<:athomos_error:600278499055370240> Comando personalizzato non trovato!')
 
     # Commands
-    @commands.group(name='customcommands', aliases=['cc', 'customcommand'])
+    @commands.hybrid_group(name='customcommands', fallback='list')
     async def _customcommands(self, ctx):
         """
         Show all custom commands for this server.
@@ -109,5 +125,5 @@ class CustomCommands(commands.Cog):
             await ctx.send(self.msg.get(ctx, 'customcommands.errors.not_found', '{error} That custom command doesn\'t exist.'))
 
 
-def setup(bot):
-    bot.add_cog(CustomCommands(bot))
+async def setup(bot):
+    await bot.add_cog(CustomCommands(bot))

@@ -54,5 +54,5 @@ class PrimeBots(commands.Cog):
         await self.postServerCount()
 
 
-def setup(bot):
-    bot.add_cog(PrimeBots(bot))
+async def setup(bot):
+    await bot.add_cog(PrimeBots(bot))
