@@ -22,11 +22,15 @@ class CustomCommands(commands.Cog):
 
 
     async def cog_check(self, ctx):
+        if ctx.command.qualified_name == 'cc':
+            return True
+
         perms = {'manage_messages': True}
         raised_perms = []
         for perm, value in perms.items():
             if getattr(ctx.channel.permissions_for(ctx.author), perm, None) != value:
                 raised_perms.append(perm)
+
         if len(raised_perms) > 0:
             raise commands.MissingPermissions(raised_perms)
         return True
