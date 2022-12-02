@@ -8,7 +8,6 @@ from utils.logger import Logger
 from utils.config import Config
 from utils.messages import Messages
 
-msg = Messages()
 
 class Radio(commands.Cog):
     def __init__(self, bot):
@@ -16,6 +15,7 @@ class Radio(commands.Cog):
 
         self.config = Config()
         self.log = Logger()
+        self.msg = Messages()
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -45,9 +45,9 @@ class Radio(commands.Cog):
                         await ctx.voice_client.disconnect()
                         await ctx.send(f'⏹️ Disconnesso da **{ctx.author.voice.channel.name}**!')
             else:
-                raise CommandError(msg.get(ctx, 'music.errors.not_connected', '{error} I\'m not connected to a voice channel!'))
+                raise CommandError(self.msg.get(ctx, 'music.errors.not_connected', '{error} I\'m not connected to a voice channel!'))
         else:
-            raise CommandError(msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
+            raise CommandError(self.msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
 
     
     @cmd_connect.command(name='info', aliases=['playing', 'nowplaying'])
@@ -73,13 +73,13 @@ class Radio(commands.Cog):
                     return
 
     @cmd_connect.before_invoke
-    async def ensure_voice(ctx):
+    async def ensure_voice(self, ctx):
         if ctx.voice_client is None:
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
                 await ctx.channel.send(f'<:athomos_success:600278477421281280> **Connesso a {ctx.author.voice.channel.mention}!**')
             else:
-                raise CommandError(msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
+                raise CommandError(self.msg.get(ctx, 'music.errors.user_not_connected', '{error} You aren\'t connected to a voice channel!'))
 
 
 async def setup(bot):
