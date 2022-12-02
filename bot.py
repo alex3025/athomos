@@ -96,7 +96,7 @@ class Bot(commands.Bot):
         basePath = Path('cogs')
         for file in basePath.rglob("*"):
             directory = file.relative_to(basePath.parent)
-            if '__pycache__' not in file.parts and directory.is_file():
+            if '__pycache__' not in file.parts and directory.is_file() and file.suffix == '.py':
                 ext = directory.as_posix().replace('/', '.').replace('.py', '')
                 try:
                     await self.load_extension(ext)
