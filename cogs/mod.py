@@ -27,7 +27,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(ban_members=True)
     async def _ban(self, ctx, member: discord.Member, *, reason=None):
         """
-        Allows you to ban a member.
+        Banna un membro dal server.
         """
         if member == ctx.guild.owner or member == self.bot.user or member == ctx.author:
             await ctx.send(self.msg.get(ctx, 'mod.ban.errors.cannot_ban_this_member', '{error} You cannot ban this member!'))
@@ -53,7 +53,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(ban_members=True)
     async def _unban(self, ctx, user: str, *, reason=None):
         """
-        Allows you to unban a user.
+        Sbanna un membro dal server.
         """
         bans = await ctx.guild.bans()
         ban_entry = discord.utils.get(bans, user__name=user)
@@ -73,7 +73,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(kick_members=True)
     async def _kick(self, ctx, member: discord.Member, *, reason=None):
         """
-        Allows you to kick a member.
+        Espelle un membro dal server.
         """
         if member == ctx.guild.owner or member == self.bot.user or member == ctx.author:
             await ctx.send(self.msg.get(ctx, 'mod.ban.errors.cannot_kick_this_member', '{error} You cannot kick this member!'))
@@ -99,7 +99,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     async def _mute(self, ctx, member: discord.Member, *, reason=None):
         """
-        Allows you to mute a member.
+        Muta un membro nel server.
         """
         muted_role = discord.utils.get(ctx.guild.roles, name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'))
         if not muted_role:
@@ -135,7 +135,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     async def _unmute(self, ctx, member: discord.Member, *, reason=None):
         """
-        Allows you to unmute a member.
+        Smuta un membro nel server.
         """
         muted_role = discord.utils.get(ctx.guild.roles, name=self.msg.get(ctx, 'mod.mute.role.name', 'Muted'))
         if muted_role in member.roles:
@@ -155,7 +155,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(manage_nicknames=True)
     async def _nickname(self, ctx, member: discord.Member, *, nickname=None):
         """
-        Allows you to manage a member's nickname.
+        Cambia il nickname di un membro.
         """
         try:
             await member.edit(nick=nickname)
@@ -174,7 +174,7 @@ class Mod(commands.Cog):
     @commands.check(no_reply)
     async def _announce(self, ctx, *, message):
         """
-        Allows to send a message in all the channels of the server where the bot can write.
+        Manda un messaggio in tutti i canali del server dove il bot può scrivere.
         """
         e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'mod.announce.title', ':loudspeaker: Announcement'), description=message, timestamp=datetime.utcnow())
         e.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
@@ -188,10 +188,9 @@ class Mod(commands.Cog):
     @commands.hybrid_group(fallback='member', name='report')
     async def _report(self, ctx, member: discord.Member, *, reason):
         """
-        Allows you to report a member.
-
-        If you have the necessary permissions, you can set the channel where the reports will be sent.
+        Reporta un membro agli amministratori del server.
         """
+        # Se hai i permessi necessari, puoi impostare il canale dove verranno inviati i report.
         channel = self.db.find_one({'id': ctx.guild.id})['reportsChannel']
         if channel:
             e = discord.Embed(colour=int('f44336', 16), title=self.msg.get(ctx, 'mod.report.title', ':warning: Report'), timestamp=datetime.utcnow())
@@ -217,7 +216,7 @@ class Mod(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def _report_set(self, ctx, channel: discord.TextChannel=None):
         """
-        Allows you to set the channel where the reports will be sent.
+        Imposta il canale dove verranno inviati i report.
         """
         reportsChannel = self.db.find_one({'id': ctx.guild.id})['reportsChannel']
 
@@ -238,7 +237,7 @@ class Mod(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def _report_disable(self, ctx):
         """
-        Allows you to disable the channel dedicated to reports.
+        Disabilita il canale dedicato ai report.
         """
         reportsChannel = self.db.find_one({'id': ctx.guild.id})['reportsChannel']
         if reportsChannel:
@@ -251,7 +250,7 @@ class Mod(commands.Cog):
     @commands.hybrid_command(name='ping')
     async def _ping(self, ctx):
         """
-        It allows you to control the latency (ping) of the bot.
+        Permette di controllare la latenza (ping) del bot.
         """
         ping = round(self.bot.latency * 1000, 2)
 
@@ -287,9 +286,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(manage_messages=True)
     async def _clean(self, ctx, limit: int=25):
         """
-        Allows you to delete a certain number of messages.
-
-        Default is 25.
+        Cancella un certo numero di messaggi. Di default sono 25.
         """
         if ctx.invoked_subcommand is None:
             await self.purge(ctx, limit)
@@ -299,9 +296,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(manage_messages=True)
     async def _clean_commands(self, ctx, limit: int=25):
         """
-        Allows you to delete a certain number of bot messages.
-
-        Default is 25.
+        Permette di cancellare un certo numero di messaggi del bot. Di default sono 25.
         """
         await self.purge(ctx, limit, False)
 

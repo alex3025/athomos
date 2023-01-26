@@ -12,13 +12,17 @@ class CustomCommands(commands.Cog):
     Module containing commands useful for managing customized commands.
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot, cmds):
         self.bot = bot
 
         self.msg = Messages()
         self.db = Database().db
         self.config = Config()
 
+        # self.cmd_mention = '`/cc`'
+        for cmd in cmds:
+            if cmd.name == 'c':
+                self.cmd_mention = cmd.mention
 
     async def cog_check(self, ctx):
         if ctx.command.qualified_name == 'cc':
@@ -49,10 +53,10 @@ class CustomCommands(commands.Cog):
     #         except TypeError:
     #             pass
     
-    @commands.hybrid_command(name='cc')
+    @commands.hybrid_command(name='c')
     async def _customcommands_invoke(self, ctx, command: str):
         """
-        Runs a custom command
+        Invoca un comando personalizzato.
         """
         try:
             customCommands = self.db.find_one({'id': ctx.guild.id})['customCommands']
@@ -70,7 +74,7 @@ class CustomCommands(commands.Cog):
     @commands.hybrid_group(name='customcommands', fallback='list')
     async def _customcommands(self, ctx):
         """
-        Show all custom commands for this server.
+        Mostra tutti i comandi personalizzati per questo server.
         """
         if ctx.invoked_subcommand is None:
             fields = [{'**' + list(await self.bot.get_prefix(ctx.message))[-1] + name + '**': attrs['data'].format_map(self.msg.placeholders(ctx.message))} for name, attrs in self.db.find_one({'id': ctx.guild.id})['customCommands'].items()]
@@ -80,13 +84,15 @@ class CustomCommands(commands.Cog):
 
             e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'customcommands.title', 'Custom commands:'))
             pages = menus.MenuPages(source=EmbedFieldsPaginator(embed=e, fields=fields, ctx=ctx, per_page=10), clear_reactions_after=True)
+
             await pages.start(ctx)
+            await ctx.send(self.msg.get(ctx, 'customcommands.normal', f':information_source: Usa {self.cmd_mention} per invocare un comando personalizzato!'))
 
 
     @_customcommands.command(name='add', aliases=['create'])
     async def _customcommands_add(self, ctx, name, *, text):
         """
-        Allows you to create a new custom command.
+        Crea un nuovo comando personalizzato.
         """
         if self.bot.get_command(name):
             return await ctx.send(self.msg.get(ctx, 'customcommands.errors.is_bot_command', '{error} You cannot overwrite a bot command.'))
@@ -103,7 +109,7 @@ class CustomCommands(commands.Cog):
     @_customcommands.command(name='edit', aliases=['modify', 'update'])
     async def _customcommands_edit(self, ctx, name, *, text):
         """
-        Allows to edit a custom command.
+        Modifica un comando personalizzato.
         """
         customCommands = self.db.find_one({'id': ctx.guild.id})['customCommands']
 
@@ -117,7 +123,7 @@ class CustomCommands(commands.Cog):
     @_customcommands.command(name='remove', aliases=['delete'])
     async def _customcommands_remove(self, ctx, name):
         """
-        Allows you to remove a custom command.
+        Rimuove un comando personalizzato.
         """
         customCommands = self.db.find_one({'id': ctx.guild.id})['customCommands']
 
@@ -129,4 +135,5 @@ class CustomCommands(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(CustomCommands(bot))
+    cmds = await bot.tree.fetch_commands()
+    await bot.add_cog(CustomCommands(bot, cmds))

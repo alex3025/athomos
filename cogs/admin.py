@@ -34,32 +34,32 @@ class Admin(commands.Cog):
 
 
     # Commands
-    @commands.hybrid_group(name='settings', fallback='list')
-    async def _settings(self, ctx):
-        """
-        Allows you to manage the bot settings.
-        """
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(str(ctx.command))
+    # @commands.hybrid_group(name='settings', fallback='list')
+    # async def _settings(self, ctx):
+    #     """
+    #     Gestisce le impostazioni del bot.
+    #     """
+    #     if ctx.invoked_subcommand is None:
+    #         await ctx.send_help(str(ctx.command))
 
-    @_settings.command(name='prefix')
-    async def _prefix(self, ctx, prefix):
-        """
-        Allows you to change the bot prefix.
-        """
-        max_length = 4
-        if '@' in prefix or '#' in prefix or '/' in prefix:
-            await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.errors.bad_prefix', '{error} Prefix can\'t contain `#`, `@` or `/` characters.'))
-        elif len(prefix) > max_length:
-            await ctx.send(self.msg.format(self.msg.get(ctx, 'admin.settings.prefix.errors.too_long', '{error} Prefix can\'t be longer than {length} characters.'), length=max_length))
-        else:
-            self.db.update_one({'id': ctx.guild.id}, {'$set': {'prefix': prefix}})
-            await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.updated', '{success} **Prefix updated!** Now the prefix is: `{prefix}`'))
+    # @_settings.command(name='prefix', enabled=False)
+    # async def _prefix(self, ctx, prefix):
+    #     """
+    #     Allows you to change the bot prefix.
+    #     """
+    #     max_length = 4
+    #     if '@' in prefix or '#' in prefix or '/' in prefix:
+    #         await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.errors.bad_prefix', '{error} Prefix can\'t contain `#`, `@` or `/` characters.'))
+    #     elif len(prefix) > max_length:
+    #         await ctx.send(self.msg.format(self.msg.get(ctx, 'admin.settings.prefix.errors.too_long', '{error} Prefix can\'t be longer than {length} characters.'), length=max_length))
+    #     else:
+    #         self.db.update_one({'id': ctx.guild.id}, {'$set': {'prefix': prefix}})
+    #         await ctx.send(self.msg.get(ctx, 'admin.settings.prefix.updated', '{success} **Prefix updated!** Now the prefix is: `{prefix}`'))
 
-    @_settings.command(name='language')
-    @commands.is_owner()  # Currently disabled for the public
-    @commands.bot_has_permissions(manage_roles=True)
-    async def _language(self, ctx, *, language=None):
+    # @_settings.command(name='language', enabled=False)
+    # @commands.is_owner()  # Currently disabled for the public
+    # @commands.bot_has_permissions(manage_roles=True)
+    # async def _language(self, ctx, *, language=None):
         """
         Allows you to change the language of the bot.
         """
@@ -103,7 +103,7 @@ class Admin(commands.Cog):
     @commands.hybrid_group(name='messages')
     async def _messages(self, ctx):
         """
-        Allows you to manage the settings for join and leave messages.
+        Gestisce le impostazioni per i messaggi di benvenuto ed uscita.
         """
         if ctx.invoked_subcommand is None:
             messages = self.db.find_one({'id': ctx.guild.id})['messages']
@@ -127,7 +127,7 @@ class Admin(commands.Cog):
     @_messages.command(name='placeholders')
     async def _messages_placeholders(self, ctx):
         """
-        Shows placeholders that can be used to customize join, leave, and custom commands.
+        Mostra i placeholders per personalizzare i messaggi di benvenuto, uscita e comandi personalizzati.
         """
         e = discord.Embed(colour=self.config.embeds_color, title=self.msg.get(ctx, 'admin.settings.messages.placeholders.title', 'Messages Placeholders'))
 
@@ -145,7 +145,7 @@ class Admin(commands.Cog):
     @commands.hybrid_group(name='joinmessage', fallback='set')
     async def _messages_join(self, ctx, *, welcome_message):
         """
-        Allows you to configure the join message.
+        Configura il messaggio di benvenuto.
         """
         if ctx.invoked_subcommand is None:
             joinMessage = self.db.find_one({'id': ctx.guild.id})['messages']['join']
@@ -166,7 +166,7 @@ class Admin(commands.Cog):
     @_messages_join.command(name='channel')
     async def _messages_join_textChannel(self, ctx, text_channel: discord.TextChannel=None):
         """
-        Allows you to set or modify the text channel where the join messages will be sent.
+        Modifica o imposta il canale di testo dove verranno inviati i messaggi di benvenuto.
         """
         joinMessage = self.db.find_one({'id': ctx.guild.id})['messages']['join']
         if joinMessage['message']:
@@ -180,7 +180,7 @@ class Admin(commands.Cog):
     @_messages_join.command(name='send-in-dm')
     async def _messages_join_sendInDm(self, ctx):
         """
-        Allows you to choose whether to send the welcome message in DMs or in a text channel.
+        Permette di scegliere se inviare il messaggio di benvenuto in DM o in un canale di testo.
         """
         joinMessage = self.db.find_one({'id': ctx.guild.id})['messages']['join']
 
@@ -201,7 +201,7 @@ class Admin(commands.Cog):
     @_messages_join.command(name='remove')
     async def _messages_join_remove(self, ctx):
         """
-        Allows you to remove the join message.
+        Rimuove il messaggio di benvenuto.
         """
         joinMessage = self.db.find_one({'id': ctx.guild.id})['messages']['join']
 
@@ -214,7 +214,7 @@ class Admin(commands.Cog):
     @commands.hybrid_group(name='leavemessage', fallback='set')
     async def _messages_leave(self, ctx, *, leave_message):
         """
-        Allows you to configure the leave message.
+        Configura il messaggio di uscita.
         """
         if ctx.invoked_subcommand is None:
             leaveMessage = self.db.find_one({'id': ctx.guild.id})['messages']['leave']
@@ -235,7 +235,7 @@ class Admin(commands.Cog):
     @_messages_leave.command(name='channel')
     async def _messages_leave_textChannel(self, ctx, text_channel: discord.TextChannel=None):
         """
-        Allows you to set or modify the text channel where the leave messages will be sent.
+        Modifica o imposta il canale di testo dove verranno inviati i messaggi di uscita.
         """
         leaveMessage = self.db.find_one({'id': ctx.guild.id})['messages']['leave']
 
@@ -250,7 +250,7 @@ class Admin(commands.Cog):
     @_messages_leave.command(name='remove', aliases=['clear', 'delete'])
     async def _messages_leave_remove(self, ctx):
         """
-        Allows you to remove the leave message.
+        Rimuove il messaggio di uscita.
         """
         leaveMessage = self.db.find_one({'id': ctx.guild.id})['messages']['leave']
 
@@ -263,7 +263,7 @@ class Admin(commands.Cog):
     @commands.hybrid_group(name='joinroles', fallback='list')
     async def _joinroles(self, ctx):
         """
-        Allows you to configure the roles that will be given when a new user joins the server.
+        Configura i ruoli che verranno dati quando un nuovo utente entra nel server.
         """
         if ctx.invoked_subcommand is None:
             welcomeRoles = self.db.find_one({'id': ctx.guild.id})['welcomeRoles']
@@ -278,7 +278,7 @@ class Admin(commands.Cog):
     @_joinroles.command(name='add')
     async def _joinroles_add(self, ctx, *, roles: discord.Role):
         """
-        Allows you to add one or more roles to the list of joinroles.
+        Aggiunge uno o più ruoli alla lista dei ruoli di benvenuto.
         """
         if len(roles) <= 0:
             class Param:
@@ -310,7 +310,7 @@ class Admin(commands.Cog):
     @_joinroles.command(name='remove')
     async def _joinroles_remove(self, ctx, *, roles: discord.Role):
         """
-        Allows you to remove one or more roles from the list of joinroles.
+        Rimuove uno o più ruoli dalla lista dei ruoli di benvenuto.
         """
         if roles == ():
             class Param:
