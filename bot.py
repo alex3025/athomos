@@ -83,11 +83,13 @@ class Bot(commands.Bot):
         self.db.add_missing_guilds(self)
 
         with open('guilds.txt', 'w') as f:
+            self.log.info('Writing guilds to file...')
             async for guild in self.fetch_guilds(limit=None):
                 mem = 0
                 async for member in guild.fetch_members(limit=None):
                     mem += 1
                 f.write(f'{guild.name}: {mem}\n')
+            self.log.info('Guilds written to file!')
 
         # guildd = self.get_guild(379704537486721025)
         await self.tree.sync()
