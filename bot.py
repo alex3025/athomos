@@ -82,13 +82,20 @@ class Bot(commands.Bot):
         self.update_stats.start()
         self.db.add_missing_guilds(self)
 
+        guilds = {}
         with open('guilds.txt', 'w') as f:
             self.log.info('Writing guilds to file...')
             async for guild in self.fetch_guilds(limit=None):
                 mem = 0
                 async for member in guild.fetch_members(limit=None):
                     mem += 1
-                f.write(f'{guild.name}: {mem}\n')
+                guilds[guild.name] = mem
+
+            # sort guilds by members
+            guilds = {k: v for k, v in sorted(guilds.items(), key=lambda item: item[1], reverse=True)}
+
+            for guild in guilds:
+                f.write(f'{guild} - {guilds[guild]}\n')
             self.log.info('Guilds written to file!')
 
         # guildd = self.get_guild(379704537486721025)
