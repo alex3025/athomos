@@ -146,17 +146,18 @@ Thumbs.db #thumbnail cache on Windows
 
 
 ### vscode ###
-.vscode/*
+.vscode
 *.code-workspace
 
 ### custom files ###
 *.log
 ffmpeg.exe
 start.bat
-config/settings.ini
+config/settings.ini*
 config/lavalink_nodes.json
 cogs/api.py
 # cogs/radio.py
 config/lavalink_nodes.json
+cogs/integrations/primebots.py.disabled
 
 guilds.txt
